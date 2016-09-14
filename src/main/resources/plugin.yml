@@ -1,0 +1,19 @@
+name: ArmorTools
+main: de.mickare.armortools.ArmorToolsPlugin
+version: 0.0.1
+website: http://www.rennschnitzel.de
+authors:
+- mickare
+- Prefix
+description: ArmorTools Plugin gives commands to players to customize armorstand
+softdepend:
+- WorldGuard
+- WorldEdit
+commands:
+  armor:
+    description: Hauptbefehl für das Armorstand Plugin
+    aliases:
+    - armorstand
+    - armortools
+    usage: /<command>
+    permission: armortools.main

@@ -1,0 +1,46 @@
+package de.mickare.armortools.command.armorstand;
+
+import org.bukkit.entity.Player;
+
+import de.mickare.armortools.ArmorToolsPlugin;
+import de.mickare.armortools.Out;
+import de.mickare.armortools.Permissions;
+import de.mickare.armortools.command.armorstand.CloneCommand.ArmorSetting;
+
+public class PasteCommand extends AbstractModifyCommand1 {
+
+  public PasteCommand(ArmorToolsPlugin plugin) {
+    super(plugin, "paste", "paste [area]", Out.CMD_PASTE);
+    this.addPermission(Permissions.PASTE);
+  }
+
+  @Override
+  protected ModifyAction parseAction(Player player, int area) {
+
+    final ArmorSetting setting = CloneCommand.SETTINGS.get(player);
+    if (setting == null) {
+      Out.CMD_PASTE_MISSING_CLONE.send(player);
+      return null;
+    }
+
+    if (area > 0) {
+
+      return ModifyAction.area(area, a -> {
+        setting.apply(a);
+        return true;
+      });
+
+    } else {
+
+      Out.CMD_MODIFY_HIT.send(player, this.getCommand());
+
+      return ModifyAction.click(a -> {
+        setting.apply(a);
+        Out.CMD_PASTE_DONE.send(player);
+        return true;
+      });
+
+    }
+
+  }
+}
