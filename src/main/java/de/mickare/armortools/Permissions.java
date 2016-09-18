@@ -24,6 +24,7 @@ public enum Permissions implements Permission {
   CLONE(ARMORSTAND, "clone"),
   GRAVITY(ARMORSTAND, "gravity"),
   HAND(ARMORSTAND, "hand"),
+  OFFHAND(ARMORSTAND, "offhand"),
   HELMET(ARMORSTAND, "helmet"),
   HIDE(ARMORSTAND, "hide"),
   MARKER(ARMORSTAND, "marker"),

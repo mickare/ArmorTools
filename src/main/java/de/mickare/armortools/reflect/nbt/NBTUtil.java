@@ -9,32 +9,21 @@ import de.mickare.armortools.util.function.CheckedBiConsumer;
 
 public class NBTUtil {
 
-  private static CheckedBiConsumer<Object, ? super Object> ENTITY_READ_TAG;
-  private static CheckedBiConsumer<Object, ? super Object> ENTITY_WRITE_TAG;
+  private static CheckedBiConsumer<Object, ? super Object> getReadMethod(Object handle)
+      throws NoSuchMethodException, SecurityException, ClassNotFoundException {
+    return handle.getClass().getMethod("b", BukkitReflect.getNMSClass("NBTTagCompound"))::invoke;
+  }
 
-  static {
-
-    try {
-      Class<?> tag = BukkitReflect.getNMSClass("NBTTagCompound");
-      Class<?> entity = BukkitReflect.getNMSClass("Entity");
-
-      try {
-        ENTITY_READ_TAG = entity.getMethod("b", tag)::invoke;
-      } catch (Exception e) {
-        ENTITY_READ_TAG = entity.getMethod("c", tag)::invoke;
-      }
-
-      ENTITY_WRITE_TAG = entity.getMethod("a", tag)::invoke;
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-
+  private static CheckedBiConsumer<Object, ? super Object> getWriteMethod(Object handle)
+      throws NoSuchMethodException, SecurityException, ClassNotFoundException {
+    return handle.getClass().getMethod("a", BukkitReflect.getNMSClass("NBTTagCompound"))::invoke;
   }
 
   public static WrapNBTCompound readCompound(Entity entity) {
     WrapNBTCompound compound = new WrapNBTCompound();
     try {
-      ENTITY_READ_TAG.accept(BukkitReflect.getHandle(entity), compound.getHandle());
+      Object handle = BukkitReflect.getHandle(entity);
+      getReadMethod(handle).accept(handle, compound.getHandle());
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -44,7 +33,8 @@ public class NBTUtil {
   public static void writeCompound(Entity entity, WrapNBTCompound compound) {
     Preconditions.checkNotNull(compound);
     try {
-      ENTITY_WRITE_TAG.accept(BukkitReflect.getHandle(entity), compound.getHandle());
+      Object handle = BukkitReflect.getHandle(entity);
+      getWriteMethod(handle).accept(handle, compound.getHandle());
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

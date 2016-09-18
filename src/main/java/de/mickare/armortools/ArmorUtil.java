@@ -1,10 +1,9 @@
 package de.mickare.armortools;
 
-
-
 import java.lang.reflect.Method;
 
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.inventory.ItemStack;
 
 import de.mickare.armortools.reflect.BukkitReflect;
 import de.mickare.armortools.reflect.nbt.NBTUtil;
@@ -88,6 +87,5 @@ public class ArmorUtil {
       throw new RuntimeException(e);
     }
   }
-
 
 }

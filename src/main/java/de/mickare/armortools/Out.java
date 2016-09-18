@@ -58,6 +58,7 @@ public enum Out {
   CMD_CLONE,
   CMD_GRAVITY,
   CMD_HAND,
+  CMD_OFFHAND,
   CMD_HELMET,
   CMD_HIDE,
   CMD_MARKER,

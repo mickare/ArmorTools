@@ -7,7 +7,6 @@ import de.mickare.armortools.command.armorstand.ChairCommand;
 import de.mickare.armortools.command.armorstand.CloneCommand;
 import de.mickare.armortools.command.armorstand.CountCommand;
 import de.mickare.armortools.command.armorstand.GravityCommand;
-import de.mickare.armortools.command.armorstand.HandCommand;
 import de.mickare.armortools.command.armorstand.HandIDCommand;
 import de.mickare.armortools.command.armorstand.HelmetCommand;
 import de.mickare.armortools.command.armorstand.HelmetIDCommand;
@@ -22,6 +21,8 @@ import de.mickare.armortools.command.armorstand.RideCommand;
 import de.mickare.armortools.command.armorstand.RotateCommand;
 import de.mickare.armortools.command.armorstand.ShowCommand;
 import de.mickare.armortools.command.armorstand.SizeCommand;
+import de.mickare.armortools.command.armorstand.hand.HandCommand;
+import de.mickare.armortools.command.armorstand.hand.OffHandCommand;
 import de.prefix.armortools.FunMoveCommand;
 import de.prefix.armortools.MoveCommand;
 
@@ -52,6 +53,7 @@ public class MainArmorCommand extends AbstractMainMenuCommand<ArmorToolsPlugin> 
     this.setCommand(new CloneCommand(plugin));
     this.setCommand(new GravityCommand(plugin));
     this.setCommand(new HandCommand(plugin));
+    this.setCommand(new OffHandCommand(plugin));
     this.setCommand(new HelmetCommand(plugin));
     this.setCommand(new HideCommand(plugin));
     this.setCommand(new MarkerCommand(plugin));

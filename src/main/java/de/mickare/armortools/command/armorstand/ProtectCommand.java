@@ -1,12 +1,14 @@
 package de.mickare.armortools.command.armorstand;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 import de.mickare.armortools.ArmorToolsPlugin;
@@ -16,7 +18,7 @@ import de.mickare.armortools.Out;
 import de.mickare.armortools.Permissions;
 import net.md_5.bungee.api.ChatColor;
 
-public class ProtectCommand extends AbstractModifyCommand3 implements TabCompleter  {
+public class ProtectCommand extends AbstractModifyCommand3 implements TabCompleter {
 
 
   public ProtectCommand(ArmorToolsPlugin plugin) {
@@ -25,15 +27,22 @@ public class ProtectCommand extends AbstractModifyCommand3 implements TabComplet
     this.addPermission(Permissions.PROTECT);
   }
 
+  private final static ImmutableList<String> PARTS =
+      ImmutableList.of("all", "hand", "boots", "legs", "chest", "helmet");
+
   @Override
   public List<String> onTabComplete(CommandSender sender, Command command, String alias,
       String[] args) {
     if (args.length == 1) {
       return Lists.newArrayList("on", "off");
     }
+    if (args.length == 2) {
+      final String search = args[1].toLowerCase();
+      return PARTS.stream().filter(p -> p.contains(search)).collect(Collectors.toList());
+    }
     return null;
   }
-  
+
   @Override
   protected ModifyAction parseAction(Player player, String arg0, String arg1, int area) {
 
