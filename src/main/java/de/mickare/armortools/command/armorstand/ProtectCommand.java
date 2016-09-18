@@ -2,6 +2,7 @@ package de.mickare.armortools.command.armorstand;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -20,15 +21,15 @@ import net.md_5.bungee.api.ChatColor;
 
 public class ProtectCommand extends AbstractModifyCommand3 implements TabCompleter {
 
+  private final static ImmutableList<String> PARTS = ImmutableList
+      .copyOf(Stream.of(DisabledPart.values()).map(e -> e.name().toLowerCase()).iterator());
 
   public ProtectCommand(ArmorToolsPlugin plugin) {
-    super(plugin, "protect", "protect [on|off] [all|hand|boots|legs|chest|helmet] [area]",
+    super(plugin, "protect", "protect [on|off] [" + String.join("|", PARTS) + "] [area]",
         Out.CMD_PROTECT);
     this.addPermission(Permissions.PROTECT);
   }
 
-  private final static ImmutableList<String> PARTS =
-      ImmutableList.of("all", "hand", "boots", "legs", "chest", "helmet");
 
   @Override
   public List<String> onTabComplete(CommandSender sender, Command command, String alias,
