@@ -58,8 +58,8 @@ public abstract class AbstractModifyCommand extends AbstractCommandAndClick<Armo
       player.getNearbyEntities(action.areaSize, action.areaSize, action.areaSize).stream()//
           .filter(e -> e instanceof ArmorStand)//
           .map(e -> (ArmorStand) e)//
-          .filter(a -> getPlugin().canModify(player, a))//
           .filter(a -> callModifyEvent(player, a))//
+          .filter(a -> getPlugin().canModify(player, a))//
           .forEach(a -> {
             if (action.apply(a)) {
               count.incrementAndGet();

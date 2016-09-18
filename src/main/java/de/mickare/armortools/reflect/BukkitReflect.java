@@ -5,14 +5,14 @@ import java.lang.reflect.Method;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Entity;
 
 import com.google.common.base.Preconditions;
 
 public class BukkitReflect {
 
   public static final String VERSION = Bukkit.getServer().getClass().getName().split("\\.")[3];
-  private static Method LIVINGENTITY_GET_HANDLE = null;
+  private static Method ENTITY_GET_HANDLE = null;
   private static Method CRAFTARMORSTAND_GET_HANDLE = null;
   private static Field ENTITY_INVULNERABLE = null;
 
@@ -24,8 +24,7 @@ public class BukkitReflect {
   static {
 
     try {
-      LIVINGENTITY_GET_HANDLE =
-          getCraftBukkitClass("entity.CraftLivingEntity").getMethod("getHandle");
+      ENTITY_GET_HANDLE = getCraftBukkitClass("entity.CraftEntity").getMethod("getHandle");
       CRAFTARMORSTAND_GET_HANDLE =
           getCraftBukkitClass("entity.CraftArmorStand").getDeclaredMethod("getHandle");
 
@@ -82,9 +81,9 @@ public class BukkitReflect {
   }
 
 
-  public static Object getHandle(LivingEntity entity) throws Exception {
+  public static Object getHandle(Entity entity) throws Exception {
     Preconditions.checkNotNull(entity);
-    return LIVINGENTITY_GET_HANDLE.invoke(entity);
+    return ENTITY_GET_HANDLE.invoke(entity);
   }
 
   public static Object getHandle(ArmorStand armorstand) throws Exception {
