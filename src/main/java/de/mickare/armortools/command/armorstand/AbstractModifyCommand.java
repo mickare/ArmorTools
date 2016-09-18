@@ -13,6 +13,7 @@ import de.mickare.armortools.ArmorToolsPlugin;
 import de.mickare.armortools.Out;
 import de.mickare.armortools.Permissions;
 import de.mickare.armortools.command.AbstractCommandAndClick;
+import de.mickare.armortools.event.ArmorEventFactory;
 import de.mickare.armortools.event.ArmorstandModifyEvent;
 import de.mickare.armortools.util.Callback;
 import lombok.Getter;
@@ -42,11 +43,7 @@ public abstract class AbstractModifyCommand extends AbstractCommandAndClick<Armo
 
   }
 
-  private boolean callModifyEvent(Player player, ArmorStand armorstand) {
-    ArmorstandModifyEvent event = new ArmorstandModifyEvent(player, armorstand);
-    Bukkit.getPluginManager().callEvent(event);
-    return !event.isCancelled();
-  }
+  
 
   protected Callback<ArmorStand> doAreaAction(final Player player, final ModifyAction action) {
     if (action == null) {
@@ -58,7 +55,7 @@ public abstract class AbstractModifyCommand extends AbstractCommandAndClick<Armo
       player.getNearbyEntities(action.areaSize, action.areaSize, action.areaSize).stream()//
           .filter(e -> e instanceof ArmorStand)//
           .map(e -> (ArmorStand) e)//
-          .filter(a -> callModifyEvent(player, a))//
+          .filter(a -> ArmorEventFactory.callModifyEvent(player, a))//
           .filter(a -> getPlugin().canModify(player, a))//
           .forEach(a -> {
             if (action.apply(a)) {
@@ -78,7 +75,7 @@ public abstract class AbstractModifyCommand extends AbstractCommandAndClick<Armo
           Out.CMD_MODIFY_YOU_CANT_BUILD_HERE.send(player);
           return;
         }
-        if (!callModifyEvent(player, armorstand)) {
+        if (!ArmorEventFactory.callModifyEvent(player, armorstand)) {
           return;
         }
         action.apply(armorstand);

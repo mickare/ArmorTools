@@ -14,10 +14,8 @@ import lombok.Setter;
 
 public class ArmorstandModifyEvent extends EntityEvent implements Cancellable {
 
-
   private static @Getter final HandlerList handlerList = new HandlerList();
-
-
+  
   private @Getter @NonNull final Player player;
 
   private @Getter @Setter boolean cancelled = false;

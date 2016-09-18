@@ -23,8 +23,8 @@ import de.mickare.armortools.command.armorstand.ShowCommand;
 import de.mickare.armortools.command.armorstand.SizeCommand;
 import de.mickare.armortools.command.armorstand.hand.HandCommand;
 import de.mickare.armortools.command.armorstand.hand.OffHandCommand;
-import de.prefix.armortools.FunMoveCommand;
-import de.prefix.armortools.MoveCommand;
+import de.mickare.armortools.command.armorstand.move.FunMoveCommand;
+import de.mickare.armortools.command.armorstand.move.MoveCommand;
 
 public class MainArmorCommand extends AbstractMainMenuCommand<ArmorToolsPlugin> {
 
