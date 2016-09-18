@@ -23,7 +23,7 @@ public class HelmetCommand extends AbstractModifyCommand1 {
 
     if (area > 0) {
 
-      final ItemStack itemInHand = player.getItemInHand();
+      final ItemStack itemInHand = player.getEquipment().getItemInMainHand();
 
       if (player.getGameMode() == GameMode.CREATIVE) {
         return ModifyAction.area(area, a -> {
@@ -52,9 +52,9 @@ public class HelmetCommand extends AbstractModifyCommand1 {
 
           if (amount.get() > 0) {
             itemInHand.setAmount(amount.get());
-            player.setItemInHand(itemInHand);
+            player.getEquipment().setItemInMainHand(itemInHand);
           } else {
-            player.setItemInHand(null);
+            player.getEquipment().setItemInMainHand(null);
           }
 
         });
@@ -77,7 +77,7 @@ public class HelmetCommand extends AbstractModifyCommand1 {
 
       if (player.getGameMode() == GameMode.CREATIVE) {
         return ModifyAction.click(a -> {
-          a.setHelmet(player.getItemInHand());
+          a.setHelmet(player.getEquipment().getItemInMainHand());
           Out.CMD_HELMET_SWITCHED.send(player);
           return true;
         });
@@ -85,10 +85,10 @@ public class HelmetCommand extends AbstractModifyCommand1 {
 
       return ModifyAction.click(a -> {
         ItemStack a_item = a.getHelmet();
-        ItemStack p_item = player.getItemInHand();
+        ItemStack p_item = player.getEquipment().getItemInMainHand();
 
         if (p_item == null || p_item.getType() == Material.AIR || p_item.getAmount() <= 1) {
-          player.setItemInHand(a_item);
+          player.getEquipment().setItemInMainHand(a_item);
           a.setHelmet(p_item);
 
         } else {
@@ -98,7 +98,7 @@ public class HelmetCommand extends AbstractModifyCommand1 {
           a.setHelmet(item);
 
           p_item.setAmount(p_item.getAmount() - 1);
-          player.setItemInHand(p_item);
+          player.getEquipment().setItemInMainHand(p_item);
           if (a_item != null) {
             player.getInventory().addItem(a_item);
           }
