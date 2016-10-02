@@ -52,6 +52,9 @@ public enum Out {
   CMD_ANGLE_MODEHELP,
   CMD_ANGLE_MODE,
   
+  CMD_ANGLE_INFO,
+  CMD_INFO_HIT,
+  
   CMD_ARMS,
   CMD_CHAIR,
   CMD_COUNT,

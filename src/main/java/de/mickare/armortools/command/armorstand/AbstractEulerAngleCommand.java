@@ -79,6 +79,36 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
   protected ModifyAction parseAction(Player player, String[] args) {
     int index = 0;
 
+    if (args.length > index) {
+      final String arg0 = args[index];
+      if (arg0.equalsIgnoreCase("i") || arg0.equalsIgnoreCase("info")) {
+        index++;
+
+        RotationMode mode = RotationMode.DEFAULT;
+
+        for (RotationMode m : RotationMode.values()) {
+          if (index >= args.length) {
+            break;
+          }
+          if (args[index].equalsIgnoreCase(m.name())) {
+            // if (!Permissions.ANGLE.checkPermission(player, m.name())) {
+            // Out.PERMISSION_MISSING_EXTENSION.send(player, m.name());
+            // return null;
+            // }
+            mode = m;
+            index++;
+            break;
+          }
+        }
+
+        Out.CMD_ANGLE_MODE.send(player, mode);
+
+        return parseInfo(player, mode);
+
+      }
+    }
+
+
     Optional<Double> x = Optional.of(0d);
     Optional<Double> y = Optional.of(0d);
     Optional<Double> z = Optional.of(0d);
@@ -107,19 +137,21 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
 
     RotationMode mode = RotationMode.DEFAULT;
 
-    if (args.length > index) {
-      for (RotationMode m : RotationMode.values()) {
-        if (args[index].equalsIgnoreCase(m.name())) {
-          // if (!Permissions.ANGLE.checkPermission(player, m.name())) {
-          // Out.PERMISSION_MISSING_EXTENSION.send(player, m.name());
-          // return null;
-          // }
-          mode = m;
-          index++;
-          break;
-        }
+    for (RotationMode m : RotationMode.values()) {
+      if (index >= args.length) {
+        break;
+      }
+      if (args[index].equalsIgnoreCase(m.name())) {
+        // if (!Permissions.ANGLE.checkPermission(player, m.name())) {
+        // Out.PERMISSION_MISSING_EXTENSION.send(player, m.name());
+        // return null;
+        // }
+        mode = m;
+        index++;
+        break;
       }
     }
+
     Out.CMD_ANGLE_MODE.send(player, mode);
 
     int area = -1;
@@ -149,10 +181,28 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
     return parseAction(player, x, y, z, mode, area);
   }
 
+  private String toStringEulerAngle(double[] angles) {
+    return angles[0] + ", " + angles[0] + ", " + angles[0];
+  }
+
+  protected ModifyAction parseInfo(final Player player, final RotationMode mode) {
+
+    Out.CMD_INFO_HIT.send(player, this.getCommand());
+
+    return ModifyAction.click(a -> {
+      double[] angles = mode.getAngles(AbstractEulerAngleCommand.this.getAngle(a));
+      Out.CMD_ANGLE_INFO.send(player, toStringEulerAngle(angles));
+      return true;
+    });
+
+  }
+
   public abstract void execute(Player player, ArmorStand armorstand,
       Function<EulerAngle, EulerAngle> rotate);
 
-  protected ModifyAction parseAction(Player player, final Optional<Double> x,
+  public abstract EulerAngle getAngle(ArmorStand armorstand);
+
+  protected ModifyAction parseAction(final Player player, final Optional<Double> x,
       final Optional<Double> y, final Optional<Double> z, final RotationMode mode, int area) {
 
     /*
@@ -212,7 +262,7 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
 
   public static class LeftArmCommand extends AbstractEulerAngleCommand {
     public LeftArmCommand(ArmorToolsPlugin plugin) {
-      super(plugin, "leftarm", "leftarm [x] [y] [z] [mode] [area]", Out.CMD_ANGLE_LEFTARM);
+      super(plugin, "leftarm", "leftarm ([x] [y] [z] [mode] [area]) / (info [mode])", Out.CMD_ANGLE_LEFTARM);
       this.addPermission(Permissions.ANGLE_LEFTARM);
     }
 
@@ -222,11 +272,16 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
       armorstand.setLeftArmPose(rotate.apply(armorstand.getLeftArmPose()));
     }
 
+    @Override
+    public EulerAngle getAngle(ArmorStand armorstand) {
+      return armorstand.getLeftArmPose();
+    }
+
   }
 
   public static class LeftLegCommand extends AbstractEulerAngleCommand {
     public LeftLegCommand(ArmorToolsPlugin plugin) {
-      super(plugin, "leftleg", "leftleg  [x] [y] [z] [mode] [area]", Out.CMD_ANGLE_LEFTLEG);
+      super(plugin, "leftleg", "leftleg ([x] [y] [z] [mode] [area]) / (info [mode])", Out.CMD_ANGLE_LEFTLEG);
       this.addPermission(Permissions.ANGLE_LEFTLEG);
     }
 
@@ -236,11 +291,15 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
       armorstand.setLeftLegPose(rotate.apply(armorstand.getLeftLegPose()));
     }
 
+    @Override
+    public EulerAngle getAngle(ArmorStand armorstand) {
+      return armorstand.getLeftLegPose();
+    }
   }
 
   public static class RightArmCommand extends AbstractEulerAngleCommand {
     public RightArmCommand(ArmorToolsPlugin plugin) {
-      super(plugin, "rightarm", "rightarm [x] [y] [z] [mode] [area]", Out.CMD_ANGLE_RIGHTARM);
+      super(plugin, "rightarm", "rightarm ([x] [y] [z] [mode] [area]) / (info [mode])", Out.CMD_ANGLE_RIGHTARM);
       this.addPermission(Permissions.ANGLE_RIGHTARM);
     }
 
@@ -250,11 +309,15 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
       armorstand.setRightArmPose(rotate.apply(armorstand.getRightArmPose()));
     }
 
+    @Override
+    public EulerAngle getAngle(ArmorStand armorstand) {
+      return armorstand.getRightArmPose();
+    }
   }
 
   public static class RightLegCommand extends AbstractEulerAngleCommand {
     public RightLegCommand(ArmorToolsPlugin plugin) {
-      super(plugin, "rightleg", "rightleg [x] [y] [z] [mode] [area]", Out.CMD_ANGLE_RIGHTLEG);
+      super(plugin, "rightleg", "rightleg ([x] [y] [z] [mode] [area]) / (info [mode])", Out.CMD_ANGLE_RIGHTLEG);
       this.addPermission(Permissions.ANGLE_RIGHTLEG);
     }
 
@@ -264,11 +327,15 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
       armorstand.setRightLegPose(rotate.apply(armorstand.getRightLegPose()));
     }
 
+    @Override
+    public EulerAngle getAngle(ArmorStand armorstand) {
+      return armorstand.getRightLegPose();
+    }
   }
 
   public static class HeadCommand extends AbstractEulerAngleCommand {
     public HeadCommand(ArmorToolsPlugin plugin) {
-      super(plugin, "head", "head [x] [y] [z] [mode] [area]", Out.CMD_ANGLE_HEAD);
+      super(plugin, "head", "head ([x] [y] [z] [mode] [area]) / (info [mode])", Out.CMD_ANGLE_HEAD);
       this.addPermission(Permissions.ANGLE_HEAD);
     }
 
@@ -278,11 +345,15 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
       armorstand.setHeadPose(rotate.apply(armorstand.getHeadPose()));
     }
 
+    @Override
+    public EulerAngle getAngle(ArmorStand armorstand) {
+      return armorstand.getHeadPose();
+    }
   }
 
   public static class BodyCommand extends AbstractEulerAngleCommand {
     public BodyCommand(ArmorToolsPlugin plugin) {
-      super(plugin, "body", "body [x] [y] [z] [mode] [area]", Out.CMD_ANGLE_BODY);
+      super(plugin, "body", "body ([x] [y] [z] [mode] [area]) / (info [mode])", Out.CMD_ANGLE_BODY);
       this.addPermission(Permissions.ANGLE_BODY);
     }
 
@@ -292,6 +363,10 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
       armorstand.setBodyPose(rotate.apply(armorstand.getBodyPose()));
     }
 
+    @Override
+    public EulerAngle getAngle(ArmorStand armorstand) {
+      return armorstand.getBodyPose();
+    }
   }
 
 }
