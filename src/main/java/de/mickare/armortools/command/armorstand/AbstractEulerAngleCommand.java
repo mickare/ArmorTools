@@ -24,7 +24,7 @@ import net.md_5.bungee.api.ChatColor;
 public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
     implements TabCompleter {
 
-  public static final double DEGREE_TO_RADIANS = Math.PI / 180;
+  public static final double DEGREE_TO_RADIANS = Math.PI / 180d;
 
   protected AbstractEulerAngleCommand(ArmorToolsPlugin plugin, String command, String usage,
       String desc) {
@@ -46,17 +46,27 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
     this(plugin, command, usage, desc.toString());
   }
 
+  private List<String> parseRotationMode(String arg) {
+    if (arg == null || arg.isEmpty()) {
+      return Lists.newArrayList(getRotationModesNames());
+    }
+    return Arrays.stream(getRotationModesNames()).filter(n -> n.startsWith(arg.toUpperCase()))
+        .collect(Collectors.toList());
+  }
+
   @Override
   public List<String> onTabComplete(CommandSender sender, Command command, String alias,
       String[] args) {
+    if (args.length == 1) {
+      return Lists.newArrayList("~ ", "info ");
+    }
+    if (args.length == 2 && (args[0].equalsIgnoreCase("i") || args[0].equalsIgnoreCase("info"))) {
+      return parseRotationMode(args[1]);
+    }
     if (args.length <= 3) {
       return Lists.newArrayList("~ ");
     } else if (args.length == 4) {
-      if (args[3].isEmpty()) {
-        return Lists.newArrayList(getRotationModesNames());
-      }
-      return Arrays.stream(getRotationModesNames()).filter(n -> n.startsWith(args[3].toUpperCase()))
-          .collect(Collectors.toList());
+      return parseRotationMode(args[3]);
     }
     return null;
   }
@@ -66,7 +76,7 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
       return Optional.empty();
     } else {
       try {
-        return Optional.of(Integer.parseInt(arg) * DEGREE_TO_RADIANS);
+        return Optional.of(Double.parseDouble(arg) * DEGREE_TO_RADIANS);
       } catch (NumberFormatException nfe) {
         Out.ARG_INVALID_INT_ONLY.send(player, fieldname, arg);
         player.sendMessage(ChatColor.RED + this.getUsage());
@@ -182,7 +192,8 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
   }
 
   private String toStringEulerAngle(double[] angles) {
-    return angles[0] + ", " + angles[0] + ", " + angles[0];
+    return (angles[0] / DEGREE_TO_RADIANS) + ", " + (angles[1] / DEGREE_TO_RADIANS) + ", "
+        + (angles[2] / DEGREE_TO_RADIANS);
   }
 
   protected ModifyAction parseInfo(final Player player, final RotationMode mode) {
@@ -262,7 +273,8 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
 
   public static class LeftArmCommand extends AbstractEulerAngleCommand {
     public LeftArmCommand(ArmorToolsPlugin plugin) {
-      super(plugin, "leftarm", "leftarm ([x] [y] [z] [mode] [area]) / (info [mode])", Out.CMD_ANGLE_LEFTARM);
+      super(plugin, "leftarm", "leftarm ([x] [y] [z] [mode] [area]) / (info [mode])",
+          Out.CMD_ANGLE_LEFTARM);
       this.addPermission(Permissions.ANGLE_LEFTARM);
     }
 
@@ -281,7 +293,8 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
 
   public static class LeftLegCommand extends AbstractEulerAngleCommand {
     public LeftLegCommand(ArmorToolsPlugin plugin) {
-      super(plugin, "leftleg", "leftleg ([x] [y] [z] [mode] [area]) / (info [mode])", Out.CMD_ANGLE_LEFTLEG);
+      super(plugin, "leftleg", "leftleg ([x] [y] [z] [mode] [area]) / (info [mode])",
+          Out.CMD_ANGLE_LEFTLEG);
       this.addPermission(Permissions.ANGLE_LEFTLEG);
     }
 
@@ -299,7 +312,8 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
 
   public static class RightArmCommand extends AbstractEulerAngleCommand {
     public RightArmCommand(ArmorToolsPlugin plugin) {
-      super(plugin, "rightarm", "rightarm ([x] [y] [z] [mode] [area]) / (info [mode])", Out.CMD_ANGLE_RIGHTARM);
+      super(plugin, "rightarm", "rightarm ([x] [y] [z] [mode] [area]) / (info [mode])",
+          Out.CMD_ANGLE_RIGHTARM);
       this.addPermission(Permissions.ANGLE_RIGHTARM);
     }
 
@@ -317,7 +331,8 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
 
   public static class RightLegCommand extends AbstractEulerAngleCommand {
     public RightLegCommand(ArmorToolsPlugin plugin) {
-      super(plugin, "rightleg", "rightleg ([x] [y] [z] [mode] [area]) / (info [mode])", Out.CMD_ANGLE_RIGHTLEG);
+      super(plugin, "rightleg", "rightleg ([x] [y] [z] [mode] [area]) / (info [mode])",
+          Out.CMD_ANGLE_RIGHTLEG);
       this.addPermission(Permissions.ANGLE_RIGHTLEG);
     }
 
