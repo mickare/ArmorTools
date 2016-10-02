@@ -1,5 +1,8 @@
 package de.mickare.armortools.util;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import org.apache.commons.math3.geometry.euclidean.threed.CardanEulerSingularityException;
 import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 import org.apache.commons.math3.geometry.euclidean.threed.RotationConvention;
@@ -44,5 +47,13 @@ public class MathUtil {
     return new EulerAngle(angles[0], angles[1], angles[2]);
   }
 
+  public static double round(double value, int places) {
+    if (places < 0)
+      throw new IllegalArgumentException();
+
+    BigDecimal bd = new BigDecimal(value);
+    bd = bd.setScale(places, RoundingMode.HALF_UP);
+    return bd.doubleValue();
+  }
 
 }

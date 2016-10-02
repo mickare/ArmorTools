@@ -19,6 +19,7 @@ import de.mickare.armortools.ArmorToolsPlugin;
 import de.mickare.armortools.Out;
 import de.mickare.armortools.Permissions;
 import de.mickare.armortools.euler.RotationMode;
+import de.mickare.armortools.util.MathUtil;
 import net.md_5.bungee.api.ChatColor;
 
 public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
@@ -57,16 +58,24 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
   @Override
   public List<String> onTabComplete(CommandSender sender, Command command, String alias,
       String[] args) {
-    if (args.length == 1) {
-      return Lists.newArrayList("~ ", "info ");
+    boolean info = false;
+    if (args.length > 0) {
+      info = args[0].equalsIgnoreCase("i") || args[0].equalsIgnoreCase("info");
     }
-    if (args.length == 2 && (args[0].equalsIgnoreCase("i") || args[0].equalsIgnoreCase("info"))) {
-      return parseRotationMode(args[1]);
+
+    if (args.length <= 1) {
+      return Lists.newArrayList("~", "info");
     }
-    if (args.length <= 3) {
-      return Lists.newArrayList("~ ");
-    } else if (args.length == 4) {
-      return parseRotationMode(args[3]);
+    if (info) {
+      if (args.length == 2) {
+        return parseRotationMode(args[1]);
+      }
+    } else {
+      if (args.length <= 3) {
+        return Lists.newArrayList("~ ");
+      } else if (args.length == 4) {
+        return parseRotationMode(args[3]);
+      }
     }
     return null;
   }
@@ -192,8 +201,9 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
   }
 
   private String toStringEulerAngle(double[] angles) {
-    return (angles[0] / DEGREE_TO_RADIANS) + ", " + (angles[1] / DEGREE_TO_RADIANS) + ", "
-        + (angles[2] / DEGREE_TO_RADIANS);
+    return MathUtil.round(angles[0] / DEGREE_TO_RADIANS, 2) //
+        + ", " + MathUtil.round(angles[1] / DEGREE_TO_RADIANS, 2) //
+        + ", " + MathUtil.round(angles[2] / DEGREE_TO_RADIANS, 2);
   }
 
   protected ModifyAction parseInfo(final Player player, final RotationMode mode) {
