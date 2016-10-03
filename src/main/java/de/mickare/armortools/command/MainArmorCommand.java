@@ -7,7 +7,6 @@ import de.mickare.armortools.command.armorstand.ChairCommand;
 import de.mickare.armortools.command.armorstand.CloneCommand;
 import de.mickare.armortools.command.armorstand.CountCommand;
 import de.mickare.armortools.command.armorstand.GravityCommand;
-import de.mickare.armortools.command.armorstand.HandIDCommand;
 import de.mickare.armortools.command.armorstand.HelmetCommand;
 import de.mickare.armortools.command.armorstand.HelmetIDCommand;
 import de.mickare.armortools.command.armorstand.HideCommand;
@@ -21,8 +20,8 @@ import de.mickare.armortools.command.armorstand.RideCommand;
 import de.mickare.armortools.command.armorstand.RotateCommand;
 import de.mickare.armortools.command.armorstand.ShowCommand;
 import de.mickare.armortools.command.armorstand.SizeCommand;
-import de.mickare.armortools.command.armorstand.hand.HandCommand;
-import de.mickare.armortools.command.armorstand.hand.OffHandCommand;
+import de.mickare.armortools.command.armorstand.hand.AbstractHandCommand;
+import de.mickare.armortools.command.armorstand.hand.AbstractHandIDCommand;
 import de.mickare.armortools.command.armorstand.move.FunMoveCommand;
 import de.mickare.armortools.command.armorstand.move.MoveCommand;
 
@@ -52,8 +51,8 @@ public class MainArmorCommand extends AbstractMainMenuCommand<ArmorToolsPlugin> 
     this.setCommand(new CountCommand(plugin));
     this.setCommand(new CloneCommand(plugin));
     this.setCommand(new GravityCommand(plugin));
-    this.setCommand(new HandCommand(plugin));
-    this.setCommand(new OffHandCommand(plugin));
+    this.setCommand(new AbstractHandCommand.HandCommand(plugin));
+    this.setCommand(new AbstractHandCommand.OffHandCommand(plugin));
     this.setCommand(new HelmetCommand(plugin));
     this.setCommand(new HideCommand(plugin));
     this.setCommand(new MarkerCommand(plugin));
@@ -70,7 +69,8 @@ public class MainArmorCommand extends AbstractMainMenuCommand<ArmorToolsPlugin> 
     this.setCommand(new FunMoveCommand(plugin));
     this.setCommand(new RideCommand(plugin));
 
-    this.setCommand(new HandIDCommand(plugin));
+    this.setCommand(new AbstractHandIDCommand.HandIDCommand(plugin));
+    this.setCommand(new AbstractHandIDCommand.OffHandIDCommand(plugin));
     this.setCommand(new HelmetIDCommand(plugin));
 
     if (plugin.getWorldEdit() != null) {

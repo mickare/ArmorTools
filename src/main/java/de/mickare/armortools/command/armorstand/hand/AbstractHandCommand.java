@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 
 import de.mickare.armortools.ArmorToolsPlugin;
 import de.mickare.armortools.Out;
+import de.mickare.armortools.Permissions;
 import de.mickare.armortools.command.armorstand.AbstractModifyCommand1;
 
 public abstract class AbstractHandCommand extends AbstractModifyCommand1 {
@@ -120,4 +121,45 @@ public abstract class AbstractHandCommand extends AbstractModifyCommand1 {
     }
 
   }
+
+
+  public static class HandCommand extends AbstractHandCommand {
+
+    public HandCommand(ArmorToolsPlugin plugin) {
+      super(plugin, "hand", "hand [area]", Out.CMD_HAND);
+      this.addPermission(Permissions.HAND);
+    }
+
+    @Override
+    protected ItemStack getArmorHandItem(ArmorStand armor) {
+      return armor.getEquipment().getItemInMainHand();
+    }
+
+    @Override
+    protected void setArmorHandItem(ArmorStand armor, ItemStack item) {
+      armor.getEquipment().setItemInMainHand(item);
+    }
+
+  }
+
+  public static class OffHandCommand extends AbstractHandCommand {
+
+    public OffHandCommand(ArmorToolsPlugin plugin) {
+      super(plugin, "offhand", "offhand [area]", Out.CMD_HAND);
+      this.addPermission(Permissions.OFFHAND);
+    }
+
+    @Override
+    protected ItemStack getArmorHandItem(ArmorStand armor) {
+      return armor.getEquipment().getItemInOffHand();
+    }
+
+    @Override
+    protected void setArmorHandItem(ArmorStand armor, ItemStack item) {
+      armor.getEquipment().setItemInOffHand(item);
+    }
+
+  }
+
+
 }

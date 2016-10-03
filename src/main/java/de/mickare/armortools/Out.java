@@ -80,6 +80,7 @@ public enum Out {
   CMD_RIDE,
   
   CMD_HAND_ID,
+  CMD_OFFHAND_ID,
   CMD_HELMET_ID,
   
   CMD_HAND_SWITCHED,
