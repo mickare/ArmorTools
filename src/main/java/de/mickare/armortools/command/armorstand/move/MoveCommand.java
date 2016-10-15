@@ -1,7 +1,9 @@
 package de.mickare.armortools.command.armorstand.move;
 
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import org.bukkit.Location;
@@ -16,45 +18,69 @@ import de.mickare.armortools.Out;
 import de.mickare.armortools.Permissions;
 import de.mickare.armortools.StepAction;
 import de.mickare.armortools.StepManager;
+import de.mickare.armortools.command.armorstand.AbstractModifyCommand;
 import de.mickare.armortools.command.armorstand.AbstractModifyCommand1;
 import de.mickare.armortools.event.ArmorEventFactory;
 import de.mickare.armortools.util.Callback;
+import de.mickare.armortools.util.DataContainer;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-public class MoveCommand extends AbstractModifyCommand1 {
+public class MoveCommand extends AbstractModifyCommand {
 
   public static final int dis_modulo = 32;
   public static final int dis_normal_modulo = 16;
   public static final int dis_sneak_modulo = 1;
 
   public MoveCommand(ArmorToolsPlugin plugin) {
-    super(plugin, "move", "move [area]", Out.CMD_MOVE);
+    super(plugin, "move", "move [-nogrid] [area]", Out.CMD_MOVE);
     this.addPermission(Permissions.MOVE);
   }
 
+  private static final DataContainer.DataKey<Boolean> KEY_USEGRID = DataContainer.newKey();
+
   @Override
-  protected ModifyAction parseAction(Player player, int area) {
+  protected ModifyAction parseAction(Player player, String[] args) {
 
-    if (area > 0) {
+    final AtomicBoolean useGrid = new AtomicBoolean(true);
 
-      return ModifyAction.area(area, a -> {
+    int index = 0;
+    if (args.length > index) {
+      if (args[index].equalsIgnoreCase("-nogrid")) {
+        useGrid.set(false);
+        index++;
+      }
+    }
+
+    Optional<Integer> area = AbstractModifyCommand1.parseArea(this, player, args, index);
+
+    if (!area.isPresent()) {
+      return null;
+    }
+
+    if (area.get() > 0) {
+
+      return ModifyAction.area(area.get(), a -> {
         return true;
-      });
+      }).setData(KEY_USEGRID, useGrid.get());
 
     } else {
 
       Out.CMD_MODIFY_HIT.send(player, this.getCommand());
 
       return ModifyAction.click(a -> {
-        StepManager.getInstance().putMove(player, new MoveStepAction(Sets.newHashSet(a)));
+        StepManager.getInstance().putMove(player,
+            new MoveStepAction(Sets.newHashSet(a), useGrid.get()));
         Out.CMD_MOVE_START.send(player, 1);
         return true;
       });
 
     }
 
+
   }
+
 
   protected Callback<ArmorStand> doAreaAction(Player player, ModifyAction action) {
     if (action == null) {
@@ -74,7 +100,8 @@ public class MoveCommand extends AbstractModifyCommand1 {
         Out.CMD_MOVE_AREA_EMPTY.send(player);
         return null;
       }
-      StepManager.getInstance().putMove(player, new MoveStepAction(Sets.newHashSet(armorstands)));
+      StepManager.getInstance().putMove(player, new MoveStepAction(Sets.newHashSet(armorstands),
+          action.getData().getOptional(KEY_USEGRID).orElse(true)));
 
       Out.CMD_MOVE_START.send(player, armorstands.size());
 
@@ -96,9 +123,12 @@ public class MoveCommand extends AbstractModifyCommand1 {
     }
   }
 
-  public @RequiredArgsConstructor class MoveStepAction implements StepAction {
+  @RequiredArgsConstructor
+  public class MoveStepAction implements StepAction {
 
     private final @NonNull Set<ArmorStand> armorstands;
+    private final @Getter boolean useGrid;
+
 
     @Override
     public boolean move(StepManager moveManager, Player player, int step) {
@@ -160,9 +190,11 @@ public class MoveCommand extends AbstractModifyCommand1 {
 
         loc_vec.add(loc_vec_add);
 
-        loc_vec.setX(Math.round(loc_vec.getX()));
-        loc_vec.setY(Math.round(loc_vec.getY()));
-        loc_vec.setZ(Math.round(loc_vec.getZ()));
+        if(useGrid) {
+          loc_vec.setX(Math.round(loc_vec.getX()));
+          loc_vec.setY(Math.round(loc_vec.getY()));
+          loc_vec.setZ(Math.round(loc_vec.getZ()));
+        }
         loc_vec.multiply(1.d / dis_modulo);
 
 
@@ -194,5 +226,6 @@ public class MoveCommand extends AbstractModifyCommand1 {
     }
 
   }
+
 
 }

@@ -3,7 +3,6 @@ package de.mickare.armortools.command.armorstand;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 
@@ -14,8 +13,8 @@ import de.mickare.armortools.Out;
 import de.mickare.armortools.Permissions;
 import de.mickare.armortools.command.AbstractCommandAndClick;
 import de.mickare.armortools.event.ArmorEventFactory;
-import de.mickare.armortools.event.ArmorstandModifyEvent;
 import de.mickare.armortools.util.Callback;
+import de.mickare.armortools.util.DataContainer;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +42,7 @@ public abstract class AbstractModifyCommand extends AbstractCommandAndClick<Armo
 
   }
 
-  
+
 
   protected Callback<ArmorStand> doAreaAction(final Player player, final ModifyAction action) {
     if (action == null) {
@@ -92,6 +91,7 @@ public abstract class AbstractModifyCommand extends AbstractCommandAndClick<Armo
     private final @Getter boolean area;
     private final @Getter int areaSize;
     private final @NonNull Function<ArmorStand, Boolean> modifier;
+    private final @Getter DataContainer data = new DataContainer();
     private Runnable finish = () -> {
     };
 
@@ -115,6 +115,16 @@ public abstract class AbstractModifyCommand extends AbstractCommandAndClick<Armo
 
     public void finish() {
       this.finish.run();
+    }
+
+    public <T> ModifyAction setData(DataContainer.DataKey<T> key, T value) {
+      Preconditions.checkNotNull(key);
+      this.data.set(key, value);
+      return this;
+    }
+
+    public <T> T getData(DataContainer.DataKey<T> key) {
+      return data.get(key);
     }
 
   }
