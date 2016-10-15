@@ -26,6 +26,8 @@ public abstract class AbstractHandIDCommand extends AbstractModifyCommand2 {
 
   protected abstract void setArmorHandItem(ArmorStand armor, ItemStack item);
 
+  protected abstract void sendItemSwitchedMessage(Player player);
+  
   @Override
   protected ModifyAction parseAction(Player player, String arg0, int area) {
 
@@ -95,7 +97,7 @@ public abstract class AbstractHandIDCommand extends AbstractModifyCommand2 {
 
       return ModifyAction.click(a -> {
         setArmorHandItem(a, item);
-        Out.CMD_HAND_SWITCHED.send(player);
+        sendItemSwitchedMessage(player);
         return true;
       });
 
@@ -122,6 +124,10 @@ public abstract class AbstractHandIDCommand extends AbstractModifyCommand2 {
       armor.getEquipment().setItemInMainHand(item);
     }
 
+    @Override
+    protected void sendItemSwitchedMessage(Player player) {
+      Out.CMD_HAND_SWITCHED.send(player);      
+    }
   }
 
   public static class OffHandIDCommand extends AbstractHandIDCommand {
@@ -141,6 +147,10 @@ public abstract class AbstractHandIDCommand extends AbstractModifyCommand2 {
       armor.getEquipment().setItemInOffHand(item);
     }
 
+    @Override
+    protected void sendItemSwitchedMessage(Player player) {
+      Out.CMD_OFFHAND_SWITCHED.send(player);      
+    }
   }
 
 }

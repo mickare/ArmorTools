@@ -123,10 +123,6 @@ public abstract class AbstractModifyCommand extends AbstractCommandAndClick<Armo
       return this;
     }
 
-    public <T> T getData(DataContainer.DataKey<T> key) {
-      return data.get(key);
-    }
-
   }
 
 }
