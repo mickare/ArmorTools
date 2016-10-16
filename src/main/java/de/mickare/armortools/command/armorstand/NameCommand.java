@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import de.mickare.armortools.ArmorToolsPlugin;
 import de.mickare.armortools.Out;
 import de.mickare.armortools.Permissions;
+import de.mickare.armortools.command.armorstand.AbstractModifyCommand.ModifyAction;
 import de.mickare.armortools.util.RS_StringUtils;
 import net.md_5.bungee.api.ChatColor;
 
@@ -100,13 +101,13 @@ public class NameCommand extends AbstractModifyCommand {
 
       final String fname = name;
       if (name != null) {
-        return ModifyAction.click(a -> {
+        return ModifyAction.click(ModifyAction.Type.NAME, a -> {
           a.setCustomName(fname);
           a.setCustomNameVisible(true);
           Out.CMD_NAME_SET.send(player, fname);
         });
       } else {
-        return ModifyAction.click(a -> {
+        return ModifyAction.click(ModifyAction.Type.NAME, a -> {
           a.setCustomName(fname);
           a.setCustomNameVisible(false);
           Out.CMD_NAME_REMOVED.send(player);
@@ -116,12 +117,12 @@ public class NameCommand extends AbstractModifyCommand {
 
       final String fname = name;
       if (name != null) {
-        return ModifyAction.area(area, a -> {
+        return ModifyAction.area(ModifyAction.Type.NAME, area, a -> {
           a.setCustomName(fname);
           a.setCustomNameVisible(true);
         });
       } else {
-        return ModifyAction.area(area, a -> {
+        return ModifyAction.area(ModifyAction.Type.NAME, area, a -> {
           a.setCustomName(fname);
           a.setCustomNameVisible(false);
         });

@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import de.mickare.armortools.ArmorToolsPlugin;
 import de.mickare.armortools.Out;
 import de.mickare.armortools.Permissions;
+import de.mickare.armortools.command.armorstand.AbstractModifyCommand.ModifyAction.Type;
 
 public class HelmetCommand extends AbstractItemCommand {
 
@@ -32,6 +33,11 @@ public class HelmetCommand extends AbstractItemCommand {
   @Override
   protected void sendItemSwitchedMessage(Player player) {
     Out.CMD_HELMET_SWITCHED.send(player);
+  }
+
+  @Override
+  protected Type getModifyActionType() {
+    return Type.HELMET;
   }
 
 }

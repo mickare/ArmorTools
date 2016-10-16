@@ -1,12 +1,10 @@
 package de.mickare.armortools.command.armorstand;
 
 import java.util.List;
-import java.util.Set;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 
 import com.google.common.collect.Lists;
@@ -55,7 +53,7 @@ public class PlateCommand extends AbstractModifyCommand2 implements TabCompleter
 
     if (area > 0) {
 
-      return ModifyAction.area(area, a -> {
+      return ModifyAction.area(ModifyAction.Type.PLATE, area, a -> {
         a.setBasePlate(on);
       });
 
@@ -63,7 +61,7 @@ public class PlateCommand extends AbstractModifyCommand2 implements TabCompleter
 
       Out.CMD_MODIFY_HIT.send(player, this.getCommand());
 
-      return ModifyAction.click(a -> {
+      return ModifyAction.click(ModifyAction.Type.PLATE, a -> {
         a.setBasePlate(on);
       });
 

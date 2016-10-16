@@ -18,6 +18,7 @@ import de.mickare.armortools.Permissions;
 import de.mickare.armortools.StepAction;
 import de.mickare.armortools.StepManager;
 import de.mickare.armortools.command.armorstand.AbstractModifyCommand1;
+import de.mickare.armortools.command.armorstand.AbstractModifyCommand.ModifyAction;
 import de.mickare.armortools.event.ArmorEventFactory;
 import de.mickare.armortools.event.ArmorRotateEvent;
 import lombok.Getter;
@@ -38,13 +39,13 @@ public class RotateCommand extends AbstractModifyCommand1 {
   protected ModifyAction createAction(Player player, int area) {
 
     if (area > 0) {
-      return ModifyAction.area(area, (action, armorstands) -> {
+      return ModifyAction.area(ModifyAction.Type.ROTATE, area, (action, armorstands) -> {
         return execute(player, action, armorstands);
       });
 
     } else {
       Out.CMD_MODIFY_HIT.send(player, this.getCommand());
-      return ModifyAction.click((action, armorstands) -> {
+      return ModifyAction.click(ModifyAction.Type.ROTATE, (action, armorstands) -> {
         return execute(player, action, armorstands);
       });
     }

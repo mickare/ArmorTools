@@ -53,13 +53,13 @@ public class ArmsCommand extends AbstractModifyCommand2 implements TabCompleter 
 
     if (area > 0) {
 
-      return ModifyAction.area(area, (a) -> a.setArms(on));
+      return ModifyAction.area(ModifyAction.Type.ARMS, area, (a) -> a.setArms(on));
 
     } else {
 
       Out.CMD_MODIFY_HIT.send(player, this.getCommand());
 
-      return ModifyAction.click((action, armorstands) -> {
+      return ModifyAction.click(ModifyAction.Type.ARMS, (action, armorstands) -> {
         armorstands.forEach(a -> a.setArms(on));
         Out.CMD_ARMS_MODIFIED.send(player, (on ? "on" : "off"));
         return armorstands.size();

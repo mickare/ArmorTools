@@ -79,7 +79,7 @@ public class MoveCommand extends AbstractModifyCommand implements TabCompleter {
 
     if (area.get() > 0) {
 
-      return ModifyAction.area(area.get(), (action, armorstands) -> {
+      return ModifyAction.area(ModifyAction.Type.MOVE, area.get(), (action, armorstands) -> {
         return execute(player, action, armorstands, useGrid.get());
       });
 
@@ -87,7 +87,7 @@ public class MoveCommand extends AbstractModifyCommand implements TabCompleter {
 
       Out.CMD_MODIFY_HIT.send(player, this.getCommand());
 
-      return ModifyAction.click((action, armorstands) -> {
+      return ModifyAction.click(ModifyAction.Type.MOVE, (action, armorstands) -> {
         return execute(player, action, armorstands, useGrid.get());
       });
 

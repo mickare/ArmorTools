@@ -46,7 +46,7 @@ public class FunMoveCommand extends AbstractModifyCommand1 {
 
       player.sendMessage(ChatColor.RED + "WARNING: THIS MODIFIES ARMORSTANDS (Gravity + Marker)!");
 
-      return ModifyAction.click((action, armorstands) -> {
+      return ModifyAction.click(ModifyAction.Type.FUNMOVE, (action, armorstands) -> {
         if (armorstands.size() != 1) {
           return 0;
         }

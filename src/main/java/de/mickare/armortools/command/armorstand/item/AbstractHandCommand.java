@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import de.mickare.armortools.ArmorToolsPlugin;
 import de.mickare.armortools.Out;
 import de.mickare.armortools.Permissions;
+import de.mickare.armortools.command.armorstand.AbstractModifyCommand.ModifyAction.Type;
 
 public abstract class AbstractHandCommand extends AbstractItemCommand {
 
@@ -40,6 +41,11 @@ public abstract class AbstractHandCommand extends AbstractItemCommand {
       Out.CMD_HAND_SWITCHED.send(player);
     }
 
+    @Override
+    protected Type getModifyActionType() {
+      return Type.HAND;
+    }
+
   }
 
   public static class OffHandCommand extends AbstractHandCommand {
@@ -62,6 +68,11 @@ public abstract class AbstractHandCommand extends AbstractItemCommand {
     @Override
     protected void sendItemSwitchedMessage(Player player) {
       Out.CMD_OFFHAND_SWITCHED.send(player);
+    }
+
+    @Override
+    protected Type getModifyActionType() {
+      return Type.OFFHAND;
     }
 
   }

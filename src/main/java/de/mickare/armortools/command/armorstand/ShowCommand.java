@@ -18,7 +18,7 @@ public class ShowCommand extends AbstractModifyCommand1 {
 
     if (area > 0) {
 
-      return ModifyAction.area(area, a -> {
+      return ModifyAction.area(ModifyAction.Type.SHOW, area, a -> {
         a.setVisible(true);
       });
 
@@ -26,7 +26,7 @@ public class ShowCommand extends AbstractModifyCommand1 {
 
       Out.CMD_MODIFY_HIT.send(player, this.getCommand());
 
-      return ModifyAction.click(a -> {
+      return ModifyAction.click(ModifyAction.Type.SHOW, a -> {
         a.setVisible(true);
       });
 

@@ -25,13 +25,13 @@ public class PasteCommand extends AbstractModifyCommand1 {
 
     if (area > 0) {
 
-      return ModifyAction.area(area, setting);
+      return ModifyAction.area(ModifyAction.Type.PASTE, area, setting);
 
     } else {
 
       Out.CMD_MODIFY_HIT.send(player, this.getCommand());
 
-      return ModifyAction.click((action, armorstands) -> {
+      return ModifyAction.click(ModifyAction.Type.PASTE, (action, armorstands) -> {
         armorstands.forEach(setting);
         Out.CMD_PASTE_DONE.send(player);
         return armorstands.size();

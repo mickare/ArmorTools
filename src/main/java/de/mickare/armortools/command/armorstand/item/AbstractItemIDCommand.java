@@ -66,6 +66,9 @@ public abstract class AbstractItemIDCommand extends AbstractModifyCommand2 {
     return armorstandsChanged;
   }
 
+
+  protected abstract ModifyAction.Type getModifyActionType();
+  
   @Override
   protected ModifyAction createAction(Player player, String arg0, int area) {
 
@@ -125,13 +128,13 @@ public abstract class AbstractItemIDCommand extends AbstractModifyCommand2 {
 
     if (area > 0) {
 
-      return ModifyAction.area(area, (action, armorstands) -> {
+      return ModifyAction.area(getModifyActionType(), area, (action, armorstands) -> {
         return executeAction(player, action, armorstands, item);
       });
 
     } else {
 
-      return ModifyAction.click((action, armorstands) -> {
+      return ModifyAction.click(getModifyActionType(), (action, armorstands) -> {
         return executeAction(player, action, armorstands, item);
       });
 

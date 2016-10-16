@@ -19,6 +19,7 @@ import com.google.common.collect.Lists;
 import de.mickare.armortools.ArmorToolsPlugin;
 import de.mickare.armortools.Out;
 import de.mickare.armortools.Permissions;
+import de.mickare.armortools.command.armorstand.AbstractModifyCommand.ModifyAction.Type;
 import de.mickare.armortools.euler.RotationMode;
 import de.mickare.armortools.util.MathUtil;
 import net.md_5.bungee.api.ChatColor;
@@ -207,11 +208,13 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
         + ", " + MathUtil.round(angles[2] / DEGREE_TO_RADIANS, 2);
   }
 
+  protected abstract ModifyAction.Type getModifyActionType();
+
   protected ModifyAction parseInfo(final Player player, final RotationMode mode) {
 
     Out.CMD_INFO_HIT.send(player, this.getCommand());
 
-    return ModifyAction.click((action, armorstands) -> {
+    return ModifyAction.click(ModifyAction.Type.NONE, (action, armorstands) -> {
       armorstands.stream().findAny().ifPresent(a -> {
         double[] angles = mode.getAngles(AbstractEulerAngleCommand.this.getAngle(a));
         Out.CMD_ANGLE_INFO.send(player, toStringEulerAngle(angles));
@@ -265,7 +268,7 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
 
     if (area > 0) {
 
-      return ModifyAction.area(area, (action, armorstands) -> {
+      return ModifyAction.area(getModifyActionType(), area, (action, armorstands) -> {
         return executeAction(player, armorstands, rotate);
       });
 
@@ -273,7 +276,7 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
 
       Out.CMD_MODIFY_HIT.send(player, this.getCommand());
 
-      return ModifyAction.click((action, armorstands) -> {
+      return ModifyAction.click(getModifyActionType(), (action, armorstands) -> {
         return executeAction(player, armorstands, rotate);
       });
 
@@ -305,6 +308,11 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
       return armorstand.getLeftArmPose();
     }
 
+    @Override
+    protected Type getModifyActionType() {
+      return Type.LEFTARM;
+    }
+
   }
 
   public static class LeftLegCommand extends AbstractEulerAngleCommand {
@@ -323,6 +331,11 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
     @Override
     public EulerAngle getAngle(ArmorStand armorstand) {
       return armorstand.getLeftLegPose();
+    }
+
+    @Override
+    protected Type getModifyActionType() {
+      return Type.LEFTLEG;
     }
   }
 
@@ -343,6 +356,11 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
     public EulerAngle getAngle(ArmorStand armorstand) {
       return armorstand.getRightArmPose();
     }
+
+    @Override
+    protected Type getModifyActionType() {
+      return Type.RIGHTARM;
+    }
   }
 
   public static class RightLegCommand extends AbstractEulerAngleCommand {
@@ -362,6 +380,11 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
     public EulerAngle getAngle(ArmorStand armorstand) {
       return armorstand.getRightLegPose();
     }
+
+    @Override
+    protected Type getModifyActionType() {
+      return Type.RIGHTLEG;
+    }
   }
 
   public static class HeadCommand extends AbstractEulerAngleCommand {
@@ -380,6 +403,11 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
     public EulerAngle getAngle(ArmorStand armorstand) {
       return armorstand.getHeadPose();
     }
+
+    @Override
+    protected Type getModifyActionType() {
+      return Type.HEAD;
+    }
   }
 
   public static class BodyCommand extends AbstractEulerAngleCommand {
@@ -397,6 +425,11 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
     @Override
     public EulerAngle getAngle(ArmorStand armorstand) {
       return armorstand.getBodyPose();
+    }
+
+    @Override
+    protected Type getModifyActionType() {
+      return Type.BODY;
     }
   }
 

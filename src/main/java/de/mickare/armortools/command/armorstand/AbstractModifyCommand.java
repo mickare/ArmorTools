@@ -78,8 +78,7 @@ public abstract class AbstractModifyCommand extends AbstractCommandAndClick<Armo
   }
 
   private void executeAction(Player player, ModifyAction action, Set<ArmorStand> armorstands) {
-    ArmorstandModifyEvent event =
-        ArmorEventFactory.callPreModifyEvent(player, action, armorstands);
+    ArmorstandModifyEvent event = ArmorEventFactory.callPreModifyEvent(player, action, armorstands);
     if (event.isCancelled()) {
       return;
     }
@@ -99,7 +98,9 @@ public abstract class AbstractModifyCommand extends AbstractCommandAndClick<Armo
 
   protected abstract ModifyAction parseAction(Player player, String[] args);
 
-  public static @RequiredArgsConstructor class ModifyAction {
+  @RequiredArgsConstructor
+  public static class ModifyAction {
+    private final @Getter @NonNull Type type;
     private final @Getter boolean area;
     private final @Getter int areaSize;
     private final @NonNull BiFunction<ModifyAction, Set<ArmorStand>, Integer> modifier;
@@ -107,24 +108,25 @@ public abstract class AbstractModifyCommand extends AbstractCommandAndClick<Armo
     private Runnable finish = () -> {
     };
 
-    public static ModifyAction click(BiFunction<ModifyAction, Set<ArmorStand>, Integer> modifier) {
-      return new ModifyAction(false, 0, modifier);
+    public static ModifyAction click(Type type,
+        BiFunction<ModifyAction, Set<ArmorStand>, Integer> modifier) {
+      return new ModifyAction(type, false, 0, modifier);
     }
 
-    public static ModifyAction click(final Consumer<ArmorStand> modifier) {
-      return click((action, armorstands) -> {
+    public static ModifyAction click(Type type, final Consumer<ArmorStand> modifier) {
+      return click(type, (action, armorstands) -> {
         armorstands.forEach(modifier);
         return armorstands.size();
       });
     }
 
-    public static ModifyAction area(int size,
+    public static ModifyAction area(Type type, int size,
         BiFunction<ModifyAction, Set<ArmorStand>, Integer> modifier) {
-      return new ModifyAction(true, size, modifier);
+      return new ModifyAction(type, true, size, modifier);
     }
 
-    public static ModifyAction area(int size, final Consumer<ArmorStand> modifier) {
-      return area(size, (action, armorstands) -> {
+    public static ModifyAction area(Type type, int size, final Consumer<ArmorStand> modifier) {
+      return area(type, size, (action, armorstands) -> {
         armorstands.forEach(modifier);
         return armorstands.size();
       });
@@ -149,6 +151,38 @@ public abstract class AbstractModifyCommand extends AbstractCommandAndClick<Armo
       this.data.set(key, value);
       return this;
     }
+
+
+    public static enum Type {
+
+      HAND,
+      OFFHAND,
+      FUNMOVE,
+      MOVE,
+      RIGHTARM,
+      LEFTARM,
+      RIGHTLEG,
+      LEFTLEG,
+      HEAD,
+      BODY,
+      ARMS,
+      CHAIR,
+      GRAVITY,
+      HELMET,
+      HIDE,
+      MARKER,
+      NAME,
+      PASTE,
+      PLATE,
+      PROTECT,
+      RIDE,
+      ROTATE,
+      SHOW,
+      SIZE,
+      NONE;
+
+    }
+
 
   }
 
