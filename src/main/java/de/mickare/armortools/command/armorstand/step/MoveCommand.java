@@ -1,16 +1,23 @@
-package de.mickare.armortools.command.armorstand.move;
+package de.mickare.armortools.command.armorstand.step;
 
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 import org.bukkit.Location;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import de.mickare.armortools.ArmorToolsPlugin;
@@ -21,34 +28,45 @@ import de.mickare.armortools.StepManager;
 import de.mickare.armortools.command.armorstand.AbstractModifyCommand;
 import de.mickare.armortools.command.armorstand.AbstractModifyCommand1;
 import de.mickare.armortools.event.ArmorEventFactory;
-import de.mickare.armortools.util.Callback;
-import de.mickare.armortools.util.DataContainer;
+import de.mickare.armortools.event.ArmorMoveEvent;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-public class MoveCommand extends AbstractModifyCommand {
+public class MoveCommand extends AbstractModifyCommand implements TabCompleter {
+
+  private static final boolean USE_GRID_DEFAULT = false;
 
   public static final int dis_modulo = 32;
   public static final int dis_normal_modulo = 16;
   public static final int dis_sneak_modulo = 1;
 
   public MoveCommand(ArmorToolsPlugin plugin) {
-    super(plugin, "move", "move [-nogrid] [area]", Out.CMD_MOVE);
+    super(plugin, "move", "move [-grid] [area]", Out.CMD_MOVE);
     this.addPermission(Permissions.MOVE);
   }
 
-  private static final DataContainer.DataKey<Boolean> KEY_USEGRID = DataContainer.newKey();
+
+  @Override
+  public List<String> onTabComplete(CommandSender sender, Command command, String alias,
+      String[] args) {
+    if (args.length == 0) {
+      return Lists.newArrayList("-grid");
+    } else if ("-grid".startsWith(args[0].toLowerCase())) {
+      return Lists.newArrayList("-grid");
+    }
+    return null;
+  }
 
   @Override
   protected ModifyAction parseAction(Player player, String[] args) {
 
-    final AtomicBoolean useGrid = new AtomicBoolean(true);
+    final AtomicBoolean useGrid = new AtomicBoolean(USE_GRID_DEFAULT);
 
     int index = 0;
     if (args.length > index) {
-      if (args[index].equalsIgnoreCase("-nogrid")) {
-        useGrid.set(false);
+      if (args[index].equalsIgnoreCase("-grid")) {
+        useGrid.set(!USE_GRID_DEFAULT);
         index++;
       }
     }
@@ -61,19 +79,16 @@ public class MoveCommand extends AbstractModifyCommand {
 
     if (area.get() > 0) {
 
-      return ModifyAction.area(area.get(), a -> {
-        return true;
-      }).setData(KEY_USEGRID, useGrid.get());
+      return ModifyAction.area(area.get(), (action, armorstands) -> {
+        return execute(player, action, armorstands, useGrid.get());
+      });
 
     } else {
 
       Out.CMD_MODIFY_HIT.send(player, this.getCommand());
 
-      return ModifyAction.click(a -> {
-        StepManager.getInstance().putMove(player,
-            new MoveStepAction(Sets.newHashSet(a), useGrid.get()));
-        Out.CMD_MOVE_START.send(player, 1);
-        return true;
+      return ModifyAction.click((action, armorstands) -> {
+        return execute(player, action, armorstands, useGrid.get());
       });
 
     }
@@ -81,54 +96,35 @@ public class MoveCommand extends AbstractModifyCommand {
 
   }
 
-
-  protected Callback<ArmorStand> doAreaAction(Player player, ModifyAction action) {
-    if (action == null) {
-      return null;
+  private int execute(Player player, ModifyAction action, Set<ArmorStand> armorstands,
+      boolean useGrid) {
+    if (armorstands.size() == 0) {
+      Out.CMD_MOVE_AREA_EMPTY.send(player);
+      return 0;
     }
-    if (action.isArea()) {
+    StepManager.getInstance().putMove(player,
+        new MoveStepAction(Sets.newHashSet(armorstands), useGrid));
 
-      Set<ArmorStand> armorstands =
-          player.getNearbyEntities(action.getAreaSize(), action.getAreaSize(), action.getAreaSize())
-              .stream()//
-              .filter(e -> e instanceof ArmorStand)//
-              .map(e -> (ArmorStand) e)//
-              .filter(a -> ArmorEventFactory.callModifyEvent(player, a))//
-              .filter(a -> getPlugin().canModify(player, a))//
-              .collect(Collectors.toSet());
-      if (armorstands.size() == 0) {
-        Out.CMD_MOVE_AREA_EMPTY.send(player);
-        return null;
-      }
-      StepManager.getInstance().putMove(player, new MoveStepAction(Sets.newHashSet(armorstands),
-          action.getData().getOptional(KEY_USEGRID).orElse(true)));
-
-      Out.CMD_MOVE_START.send(player, armorstands.size());
-
-      return null;
-
-    } else {
-
-      return (armorstand) -> {
-        if (!getPlugin().canModify(player, armorstand)) {
-          Out.CMD_MODIFY_YOU_CANT_BUILD_HERE.send(player);
-          return;
-        }
-        if (!ArmorEventFactory.callModifyEvent(player, armorstand)) {
-          return;
-        }
-        action.apply(armorstand);
-      };
-
-    }
+    Out.CMD_MOVE_START.send(player, armorstands.size());
+    return armorstands.size();
   }
+
+
 
   @RequiredArgsConstructor
   public class MoveStepAction implements StepAction {
 
-    private final @NonNull Set<ArmorStand> armorstands;
+    private final @Getter @NonNull Set<ArmorStand> armorstands;
     private final @Getter boolean useGrid;
 
+    private ArmorMoveEvent lastEvent = null;
+
+    @Override
+    public void callEndEvent() {
+      if (lastEvent != null) {
+        ArmorEventFactory.callEndMoveEvent(lastEvent);
+      }
+    }
 
     @Override
     public boolean move(StepManager moveManager, Player player, int step) {
@@ -181,8 +177,8 @@ public class MoveCommand extends AbstractModifyCommand {
         loc_vec_add = direction.multiply(step * dis_normal_modulo);
       }
 
-
       final Iterator<ArmorStand> iter = armorstands.iterator();
+      Map<ArmorStand, Location> targetLocations = Maps.newHashMap();
       while (iter.hasNext()) {
         final ArmorStand armorstand = iter.next();
 
@@ -190,7 +186,7 @@ public class MoveCommand extends AbstractModifyCommand {
 
         loc_vec.add(loc_vec_add);
 
-        if(useGrid) {
+        if (useGrid) {
           loc_vec.setX(Math.round(loc_vec.getX()));
           loc_vec.setY(Math.round(loc_vec.getY()));
           loc_vec.setZ(Math.round(loc_vec.getZ()));
@@ -203,10 +199,6 @@ public class MoveCommand extends AbstractModifyCommand {
         loc.setY(loc_vec.getY());
         loc.setZ(loc_vec.getZ());
 
-        if (!getPlugin().canBuild(player, loc)) {
-          continue;
-        }
-
         if (loc.getBlockY() <= 0) {
           Out.ARMOR_REMOVED_FELL_THROUGH_WORLD.send(player);
           iter.remove();
@@ -214,7 +206,21 @@ public class MoveCommand extends AbstractModifyCommand {
           continue;
         }
 
-        armorstand.teleport(loc);
+        if (!getPlugin().canBuild(player, loc)) {
+          return true;
+        }
+
+        targetLocations.put(armorstand, loc);
+      }
+
+      this.lastEvent =
+          ArmorEventFactory.callMoveEvent(this, loc_vec_add.clone().multiply(1.d / dis_modulo), targetLocations);
+      if (lastEvent.isCancelled()) {
+        return false;
+      }
+
+      for (Entry<ArmorStand, Location> e : targetLocations.entrySet()) {
+        e.getKey().teleport(e.getValue());
       }
 
       if (armorstands.isEmpty()) {

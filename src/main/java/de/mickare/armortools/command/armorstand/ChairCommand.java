@@ -15,7 +15,7 @@ import de.mickare.armortools.Out;
 import de.mickare.armortools.Permissions;
 import net.md_5.bungee.api.ChatColor;
 
-public class ChairCommand extends AbstractModifyCommand2 implements TabCompleter  {
+public class ChairCommand extends AbstractModifyCommand2 implements TabCompleter {
 
   public ChairCommand(ArmorToolsPlugin plugin) {
     super(plugin, "chair", "chair [on|off] [area]", Out.CMD_CHAIR);
@@ -30,9 +30,9 @@ public class ChairCommand extends AbstractModifyCommand2 implements TabCompleter
     }
     return null;
   }
-  
+
   @Override
-  protected ModifyAction parseAction(Player player, String arg0, int area) {
+  protected ModifyAction createAction(Player player, String arg0, int area) {
 
     if (arg0 == null) {
       Out.ARG_MISSING.send(player);
@@ -54,19 +54,19 @@ public class ChairCommand extends AbstractModifyCommand2 implements TabCompleter
 
     if (area > 0) {
 
-      return ModifyAction.area(area, a -> {
-        ArmorUtil.setSittable(a, on);
-        return true;
+      return ModifyAction.area(area, (action, armorstands) -> {
+        armorstands.forEach(a -> ArmorUtil.setSittable(a, on));
+        return armorstands.size();
       });
 
     } else {
 
       Out.CMD_MODIFY_HIT.send(player, this.getCommand());
-      
-      return ModifyAction.click(a -> {
-        ArmorUtil.setSittable(a, on);
+
+      return ModifyAction.click((action, armorstands) -> {
+        armorstands.forEach(a -> ArmorUtil.setSittable(a, on));
         Out.CMD_CHAIR_MODIFIED.send(player, (on ? "on" : "off"));
-        return true;
+        return armorstands.size();
       });
 
     }

@@ -2,6 +2,7 @@ package de.mickare.armortools.command.armorstand;
 
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.function.Consumer;
 
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
@@ -23,7 +24,7 @@ public class CloneCommand extends AbstractCommandAndClick<ArmorToolsPlugin> {
   }
 
   @Override
-  public Callback<ArmorStand> getClickCallback(final Player player, String[] args) {
+  public Callback<ArmorStand> executeOrCallback(final Player player, String[] args) {
 
     Out.CMD_MODIFY_HIT.send(player, this.getCommand());
 
@@ -40,7 +41,7 @@ public class CloneCommand extends AbstractCommandAndClick<ArmorToolsPlugin> {
     };
   }
 
-  public static class ArmorSetting {
+  public static class ArmorSetting implements Consumer<ArmorStand> {
 
     private final EulerAngle bodyPose;
     private final EulerAngle headPose;
@@ -66,7 +67,8 @@ public class CloneCommand extends AbstractCommandAndClick<ArmorToolsPlugin> {
       this.basePlate = armorstand.hasBasePlate();
     }
 
-    public void apply(ArmorStand armorstand) {
+    @Override
+    public void accept(ArmorStand armorstand) {
       armorstand.setBodyPose(bodyPose);
       armorstand.setHeadPose(headPose);
       armorstand.setLeftArmPose(leftArmPose);

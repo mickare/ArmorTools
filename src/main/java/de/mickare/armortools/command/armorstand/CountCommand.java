@@ -28,7 +28,7 @@ public class CountCommand extends AbstractModifyCommand1 implements TabCompleter
   }
 
   @Override
-  protected ModifyAction parseAction(Player player, int area) {
+  protected ModifyAction createAction(Player player, int area) {
 
     if (area > 0) {
 

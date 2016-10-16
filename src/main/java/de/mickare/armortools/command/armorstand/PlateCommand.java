@@ -1,10 +1,12 @@
 package de.mickare.armortools.command.armorstand;
 
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 
 import com.google.common.collect.Lists;
@@ -14,7 +16,7 @@ import de.mickare.armortools.Out;
 import de.mickare.armortools.Permissions;
 import net.md_5.bungee.api.ChatColor;
 
-public class PlateCommand extends AbstractModifyCommand2 implements TabCompleter  {
+public class PlateCommand extends AbstractModifyCommand2 implements TabCompleter {
 
   public PlateCommand(ArmorToolsPlugin plugin) {
     super(plugin, "plate", "plate [on|off] [area]", Out.CMD_PLATE);
@@ -29,9 +31,9 @@ public class PlateCommand extends AbstractModifyCommand2 implements TabCompleter
     }
     return null;
   }
-  
+
   @Override
-  protected ModifyAction parseAction(Player player, String arg0, int area) {
+  protected ModifyAction createAction(Player player, String arg0, int area) {
 
     if (arg0 == null) {
       Out.ARG_MISSING.send(player);
@@ -55,20 +57,18 @@ public class PlateCommand extends AbstractModifyCommand2 implements TabCompleter
 
       return ModifyAction.area(area, a -> {
         a.setBasePlate(on);
-        return true;
       });
 
     } else {
 
       Out.CMD_MODIFY_HIT.send(player, this.getCommand());
-      
+
       return ModifyAction.click(a -> {
         a.setBasePlate(on);
-        Out.CMD_PLATE_MODIFIED.send(player, (on ? "on" : "off"));
-        return true;
       });
 
     }
 
   }
+
 }

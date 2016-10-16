@@ -31,7 +31,7 @@ public class GravityCommand extends AbstractModifyCommand2 implements TabComplet
   }
 
   @Override
-  protected ModifyAction parseAction(Player player, String arg0, int area) {
+  protected ModifyAction createAction(Player player, String arg0, int area) {
 
     if (arg0 == null) {
       Out.ARG_MISSING.send(player);
@@ -53,19 +53,19 @@ public class GravityCommand extends AbstractModifyCommand2 implements TabComplet
 
     if (area > 0) {
 
-      return ModifyAction.area(area, a -> {
-        a.setGravity(on);
-        return true;
+      return ModifyAction.area(area, (action, armorstands) -> {
+        armorstands.forEach(a -> a.setGravity(on));
+        return armorstands.size();
       });
 
     } else {
 
       Out.CMD_MODIFY_HIT.send(player, this.getCommand());
 
-      return ModifyAction.click(a -> {
-        a.setGravity(on);
+      return ModifyAction.click((action, armorstands) -> {
+        armorstands.forEach(a -> a.setGravity(on));
         Out.CMD_GRAVITY_MODIFIED.send(player, (on ? "on" : "off"));
-        return true;
+        return armorstands.size();
       });
 
     }

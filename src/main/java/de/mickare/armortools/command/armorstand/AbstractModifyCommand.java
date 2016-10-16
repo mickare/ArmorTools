@@ -1,7 +1,10 @@
 package de.mickare.armortools.command.armorstand;
 
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
+import java.util.Collections;
+import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
@@ -13,6 +16,7 @@ import de.mickare.armortools.Out;
 import de.mickare.armortools.Permissions;
 import de.mickare.armortools.command.AbstractCommandAndClick;
 import de.mickare.armortools.event.ArmorEventFactory;
+import de.mickare.armortools.event.ArmorstandModifyEvent;
 import de.mickare.armortools.util.Callback;
 import de.mickare.armortools.util.DataContainer;
 import lombok.Getter;
@@ -30,7 +34,7 @@ public abstract class AbstractModifyCommand extends AbstractCommandAndClick<Armo
   }
 
   @Override
-  public Callback<ArmorStand> getClickCallback(final Player player, String[] args) {
+  public Callback<ArmorStand> executeOrCallback(final Player player, String[] args) {
 
     if (!Permissions.MODIFY.checkPermission(player)) {
       Out.PERMISSION_MISSING_MODIFY.send(player);
@@ -38,50 +42,58 @@ public abstract class AbstractModifyCommand extends AbstractCommandAndClick<Armo
     }
 
     final ModifyAction action = parseAction(player, args);
-    return doAreaAction(player, action);
+    return executeAction(player, action);
 
   }
 
-
-
-  protected Callback<ArmorStand> doAreaAction(final Player player, final ModifyAction action) {
+  private Callback<ArmorStand> executeAction(final Player player, final ModifyAction action) {
     if (action == null) {
       return null;
     }
     if (action.isArea()) {
 
-      final AtomicInteger count = new AtomicInteger(0);
-      player.getNearbyEntities(action.areaSize, action.areaSize, action.areaSize).stream()//
-          .filter(e -> e instanceof ArmorStand)//
-          .map(e -> (ArmorStand) e)//
-          .filter(a -> ArmorEventFactory.callModifyEvent(player, a))//
-          .filter(a -> getPlugin().canModify(player, a))//
-          .forEach(a -> {
-            if (action.apply(a)) {
-              count.incrementAndGet();
-            }
-          });
+      Set<ArmorStand> armorstands =
+          player.getNearbyEntities(action.getAreaSize(), action.getAreaSize(), action.getAreaSize())//
+              .stream()//
+              .filter(e -> e instanceof ArmorStand)//
+              .map(e -> (ArmorStand) e)//
+              .filter(a -> getPlugin().canModify(player, a))//
+              .collect(Collectors.toSet());
 
-      action.finish();
-      Out.CMD_MODIFY_MULTI_ARMORSTANDS.send(player, count.get());
-
-      return null;
+      executeAction(player, action, armorstands);
 
     } else {
+      Out.CMD_MODIFY_HIT.send(player, this.getCommand());
 
       return (armorstand) -> {
         if (!getPlugin().canModify(player, armorstand)) {
           Out.CMD_MODIFY_YOU_CANT_BUILD_HERE.send(player);
           return;
         }
-        if (!ArmorEventFactory.callModifyEvent(player, armorstand)) {
-          return;
-        }
-        action.apply(armorstand);
-        action.finish();
-        Out.CMD_MODIFY_DONE.send(player);
+        executeAction(player, action, Collections.singleton(armorstand));
       };
 
+    }
+    return null;
+  }
+
+  private void executeAction(Player player, ModifyAction action, Set<ArmorStand> armorstands) {
+    ArmorstandModifyEvent event =
+        ArmorEventFactory.callPreModifyEvent(player, action, armorstands);
+    if (event.isCancelled()) {
+      return;
+    }
+
+    int count = action.apply(event.getEntities());
+
+    action.finish();
+
+    ArmorEventFactory.callPostModifyEvent(event, count);
+
+    if (action.isArea()) {
+      Out.CMD_MODIFY_MULTI_ARMORSTANDS.send(player, count);
+    } else {
+      Out.CMD_MODIFY_DONE.send(player);
     }
   }
 
@@ -90,21 +102,36 @@ public abstract class AbstractModifyCommand extends AbstractCommandAndClick<Armo
   public static @RequiredArgsConstructor class ModifyAction {
     private final @Getter boolean area;
     private final @Getter int areaSize;
-    private final @NonNull Function<ArmorStand, Boolean> modifier;
+    private final @NonNull BiFunction<ModifyAction, Set<ArmorStand>, Integer> modifier;
     private final @Getter DataContainer data = new DataContainer();
     private Runnable finish = () -> {
     };
 
-    public static ModifyAction click(Function<ArmorStand, Boolean> modifier) {
+    public static ModifyAction click(BiFunction<ModifyAction, Set<ArmorStand>, Integer> modifier) {
       return new ModifyAction(false, 0, modifier);
     }
 
-    public static ModifyAction area(int size, Function<ArmorStand, Boolean> modifier) {
+    public static ModifyAction click(final Consumer<ArmorStand> modifier) {
+      return click((action, armorstands) -> {
+        armorstands.forEach(modifier);
+        return armorstands.size();
+      });
+    }
+
+    public static ModifyAction area(int size,
+        BiFunction<ModifyAction, Set<ArmorStand>, Integer> modifier) {
       return new ModifyAction(true, size, modifier);
     }
 
-    public boolean apply(ArmorStand armor) {
-      return modifier.apply(armor);
+    public static ModifyAction area(int size, final Consumer<ArmorStand> modifier) {
+      return area(size, (action, armorstands) -> {
+        armorstands.forEach(modifier);
+        return armorstands.size();
+      });
+    }
+
+    public int apply(Set<ArmorStand> armor) {
+      return modifier.apply(this, armor);
     }
 
     public ModifyAction setFinish(Runnable finish) {

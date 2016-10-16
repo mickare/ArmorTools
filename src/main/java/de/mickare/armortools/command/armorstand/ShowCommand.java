@@ -14,13 +14,12 @@ public class ShowCommand extends AbstractModifyCommand1 {
   }
 
   @Override
-  protected ModifyAction parseAction(Player player, int area) {
+  protected ModifyAction createAction(Player player, int area) {
 
     if (area > 0) {
 
       return ModifyAction.area(area, a -> {
         a.setVisible(true);
-        return true;
       });
 
     } else {
@@ -29,8 +28,6 @@ public class ShowCommand extends AbstractModifyCommand1 {
 
       return ModifyAction.click(a -> {
         a.setVisible(true);
-        Out.CMD_SHOW_DONE.send(player);
-        return true;
       });
 
     }

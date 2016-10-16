@@ -3,6 +3,7 @@ package de.mickare.armortools.command.armorstand;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -210,10 +211,12 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
 
     Out.CMD_INFO_HIT.send(player, this.getCommand());
 
-    return ModifyAction.click(a -> {
-      double[] angles = mode.getAngles(AbstractEulerAngleCommand.this.getAngle(a));
-      Out.CMD_ANGLE_INFO.send(player, toStringEulerAngle(angles));
-      return true;
+    return ModifyAction.click((action, armorstands) -> {
+      armorstands.stream().findAny().ifPresent(a -> {
+        double[] angles = mode.getAngles(AbstractEulerAngleCommand.this.getAngle(a));
+        Out.CMD_ANGLE_INFO.send(player, toStringEulerAngle(angles));
+      });
+      return 1;
     });
 
   }
@@ -262,24 +265,27 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
 
     if (area > 0) {
 
-      return ModifyAction.area(area, a -> {
-        execute(player, a, rotate);
-        return true;
+      return ModifyAction.area(area, (action, armorstands) -> {
+        return executeAction(player, armorstands, rotate);
       });
 
     } else {
 
       Out.CMD_MODIFY_HIT.send(player, this.getCommand());
 
-      return ModifyAction.click(a -> {
-        execute(player, a, rotate);
-        return true;
+      return ModifyAction.click((action, armorstands) -> {
+        return executeAction(player, armorstands, rotate);
       });
 
     }
 
   }
 
+  private int executeAction(Player player, Set<ArmorStand> armorstands,
+      Function<EulerAngle, EulerAngle> rotate) {
+    armorstands.forEach(armor -> execute(player, armor, rotate));
+    return armorstands.size();
+  }
 
   public static class LeftArmCommand extends AbstractEulerAngleCommand {
     public LeftArmCommand(ArmorToolsPlugin plugin) {

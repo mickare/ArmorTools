@@ -104,14 +104,12 @@ public class NameCommand extends AbstractModifyCommand {
           a.setCustomName(fname);
           a.setCustomNameVisible(true);
           Out.CMD_NAME_SET.send(player, fname);
-          return true;
         });
       } else {
         return ModifyAction.click(a -> {
           a.setCustomName(fname);
           a.setCustomNameVisible(false);
           Out.CMD_NAME_REMOVED.send(player);
-          return true;
         });
       }
     } else {
@@ -121,13 +119,11 @@ public class NameCommand extends AbstractModifyCommand {
         return ModifyAction.area(area, a -> {
           a.setCustomName(fname);
           a.setCustomNameVisible(true);
-          return true;
         });
       } else {
         return ModifyAction.area(area, a -> {
           a.setCustomName(fname);
           a.setCustomNameVisible(false);
-          return true;
         });
       }
 

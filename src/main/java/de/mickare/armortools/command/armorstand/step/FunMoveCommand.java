@@ -1,8 +1,7 @@
-package de.mickare.armortools.command.armorstand.move;
+package de.mickare.armortools.command.armorstand.step;
 
 import java.util.Iterator;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
@@ -18,8 +17,6 @@ import de.mickare.armortools.Permissions;
 import de.mickare.armortools.StepAction;
 import de.mickare.armortools.StepManager;
 import de.mickare.armortools.command.armorstand.AbstractModifyCommand1;
-import de.mickare.armortools.event.ArmorEventFactory;
-import de.mickare.armortools.util.Callback;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.ChatColor;
@@ -36,7 +33,7 @@ public class FunMoveCommand extends AbstractModifyCommand1 {
   }
 
   @Override
-  protected ModifyAction parseAction(final Player player, final int area) {
+  protected ModifyAction createAction(final Player player, final int area) {
 
     if (area > 0) {
 
@@ -49,7 +46,14 @@ public class FunMoveCommand extends AbstractModifyCommand1 {
 
       player.sendMessage(ChatColor.RED + "WARNING: THIS MODIFIES ARMORSTANDS (Gravity + Marker)!");
 
-      return ModifyAction.click(armorstand -> {
+      return ModifyAction.click((action, armorstands) -> {
+        if (armorstands.size() != 1) {
+          return 0;
+        }
+        ArmorStand armorstand = armorstands.stream().findAny().orElse(null);
+        if (armorstand == null) {
+          return 0;
+        }
         armorstand.eject();
         armorstand.setPassenger(player);
         ArmorUtil.setMarker(armorstand, false);
@@ -57,40 +61,19 @@ public class FunMoveCommand extends AbstractModifyCommand1 {
         StepManager.getInstance().putMove(player,
             new FunMoveStepAction(Sets.newHashSet(armorstand)));
         Out.CMD_MOVE_START.send(player, 1);
-        return true;
+        return 1;
       });
 
     }
 
   }
 
-  protected Callback<ArmorStand> doAreaAction(Player player, ModifyAction action) {
-    if (action == null) {
-      return null;
-    }
-    if (action.isArea()) {
-
-      throw new IllegalStateException();
-
-    } else {
-
-      return (armorstand) -> {
-        if (!getPlugin().canModify(player, armorstand)) {
-          Out.CMD_MODIFY_YOU_CANT_BUILD_HERE.send(player);
-          return;
-        }
-        if (!ArmorEventFactory.callModifyEvent(player, armorstand)) {
-          return;
-        }
-        action.apply(armorstand);
-      };
-
-    }
-  }
-
   public @RequiredArgsConstructor class FunMoveStepAction implements StepAction {
 
     private final @NonNull Set<ArmorStand> armorstands;
+
+    @Override
+    public void callEndEvent() {}
 
     @Override
     public boolean move(StepManager moveManager, Player player, int step) {

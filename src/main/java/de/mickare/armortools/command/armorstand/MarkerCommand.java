@@ -33,7 +33,7 @@ public class MarkerCommand extends AbstractModifyCommand2 implements TabComplete
   }
 
   @Override
-  protected ModifyAction parseAction(Player player, String arg0, int area) {
+  protected ModifyAction createAction(Player player, String arg0, int area) {
 
     if (arg0 == null) {
       Out.ARG_MISSING.send(player);
@@ -62,7 +62,6 @@ public class MarkerCommand extends AbstractModifyCommand2 implements TabComplete
           gravity.incrementAndGet();
         }
         ArmorUtil.setMarker(a, on);
-        return true;
       }).setFinish(() -> {
         if (gravity.get() > 0) {
           Out.CMD_MARKER_GRAVITY_TURNED_OFF_MULTI.send(player, gravity.get());
@@ -79,8 +78,7 @@ public class MarkerCommand extends AbstractModifyCommand2 implements TabComplete
           Out.CMD_MARKER_GRAVITY_TURNED_OFF.send(player);
         }
         ArmorUtil.setMarker(a, on);
-        Out.CMD_MARKER_MODIFIED.send(player, (on ? "on" : "off"));
-        return true;
+        // Out.CMD_MARKER_MODIFIED.send(player, (on ? "on" : "off"));
       });
 
     }

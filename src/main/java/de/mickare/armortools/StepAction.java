@@ -6,4 +6,5 @@ public interface StepAction {
 
   boolean move(StepManager moveManager, Player player, int step);
 
+  void callEndEvent();
 }

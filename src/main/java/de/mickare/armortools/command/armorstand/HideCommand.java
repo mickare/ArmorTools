@@ -14,23 +14,20 @@ public class HideCommand extends AbstractModifyCommand1 {
   }
 
   @Override
-  protected ModifyAction parseAction(Player player, int area) {
+  protected ModifyAction createAction(Player player, int area) {
 
     if (area > 0) {
-      
-      return ModifyAction.area(area, a -> {
-        a.setVisible(false);
-        return true;
-      });
+
+      return ModifyAction.area(area, a -> a.setVisible(false));
 
     } else {
 
       Out.CMD_MODIFY_HIT.send(player, this.getCommand());
 
-      return ModifyAction.click(a -> {
-        a.setVisible(false);
+      return ModifyAction.click((action, armorstands) -> {
+        armorstands.forEach(a -> a.setVisible(false));
         Out.CMD_HIDE_DONE.send(player);
-        return true;
+        return armorstands.size();
       });
 
     }

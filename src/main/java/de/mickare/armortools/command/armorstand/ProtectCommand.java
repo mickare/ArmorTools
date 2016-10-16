@@ -82,17 +82,16 @@ public class ProtectCommand extends AbstractModifyCommand3 implements TabComplet
 
       return ModifyAction.area(area, a -> {
         ArmorUtil.setProtected(a, on, part);
-        return true;
       });
 
     } else {
 
       Out.CMD_MODIFY_HIT.send(player, this.getCommand());
 
-      return ModifyAction.click(a -> {
-        ArmorUtil.setProtected(a, on, part);
+      return ModifyAction.click((action, armorstands) -> {
+        armorstands.forEach(a -> ArmorUtil.setProtected(a, on, part));
         Out.CMD_PROTECT_MODIFIED.send(player, (on ? "on" : "off"), part.name().toLowerCase());
-        return true;
+        return armorstands.size();
       });
 
     }

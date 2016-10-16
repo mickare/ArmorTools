@@ -31,7 +31,7 @@ public class SizeCommand extends AbstractModifyCommand2 implements TabCompleter 
   }
 
   @Override
-  protected ModifyAction parseAction(Player player, String arg0, int area) {
+  protected ModifyAction createAction(Player player, String arg0, int area) {
 
     if (arg0 == null) {
       Out.ARG_MISSING.send(player);
@@ -55,7 +55,6 @@ public class SizeCommand extends AbstractModifyCommand2 implements TabCompleter 
 
       return ModifyAction.area(area, a -> {
         a.setSmall(on);
-        return true;
       });
 
     } else {
@@ -64,8 +63,6 @@ public class SizeCommand extends AbstractModifyCommand2 implements TabCompleter 
 
       return ModifyAction.click(a -> {
         a.setSmall(on);
-        Out.CMD_SIZE_MODIFIED.send(player, (on ? "small" : "big"));
-        return true;
       });
 
     }

@@ -28,17 +28,15 @@ public abstract class AbstractCommandAndClick<P extends JavaPlugin> extends Abst
       return false;
     }
 
-    final Callback<ArmorStand> c = this.getClickCallback((Player) sender, args);
-    if (c == null) {
-      return true;
+    final Callback<ArmorStand> c = this.executeOrCallback((Player) sender, args);
+    if (c != null) {
+      ClickManager.getInstance().addAction((Player) sender, new CommandClickAction(c));
     }
-
-    ClickManager.getInstance().addAction((Player) sender, new CommandClickAction(c));
-
+    
     return true;
   }
 
-  public abstract Callback<ArmorStand> getClickCallback(Player player, String[] args);
+  public abstract Callback<ArmorStand> executeOrCallback(Player player, String[] args);
 
   private static class CommandClickAction extends ArmorClickAction {
 

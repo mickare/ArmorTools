@@ -7,8 +7,6 @@ import de.mickare.armortools.command.armorstand.ChairCommand;
 import de.mickare.armortools.command.armorstand.CloneCommand;
 import de.mickare.armortools.command.armorstand.CountCommand;
 import de.mickare.armortools.command.armorstand.GravityCommand;
-import de.mickare.armortools.command.armorstand.HelmetCommand;
-import de.mickare.armortools.command.armorstand.HelmetIDCommand;
 import de.mickare.armortools.command.armorstand.HideCommand;
 import de.mickare.armortools.command.armorstand.MarkerCommand;
 import de.mickare.armortools.command.armorstand.MinifyClipboardCommand;
@@ -17,13 +15,15 @@ import de.mickare.armortools.command.armorstand.PasteCommand;
 import de.mickare.armortools.command.armorstand.PlateCommand;
 import de.mickare.armortools.command.armorstand.ProtectCommand;
 import de.mickare.armortools.command.armorstand.RideCommand;
-import de.mickare.armortools.command.armorstand.RotateCommand;
 import de.mickare.armortools.command.armorstand.ShowCommand;
 import de.mickare.armortools.command.armorstand.SizeCommand;
-import de.mickare.armortools.command.armorstand.hand.AbstractHandCommand;
-import de.mickare.armortools.command.armorstand.hand.AbstractHandIDCommand;
-import de.mickare.armortools.command.armorstand.move.FunMoveCommand;
-import de.mickare.armortools.command.armorstand.move.MoveCommand;
+import de.mickare.armortools.command.armorstand.item.AbstractHandCommand;
+import de.mickare.armortools.command.armorstand.item.AbstractHandIDCommand;
+import de.mickare.armortools.command.armorstand.item.HelmetCommand;
+import de.mickare.armortools.command.armorstand.item.HelmetIDCommand;
+import de.mickare.armortools.command.armorstand.step.FunMoveCommand;
+import de.mickare.armortools.command.armorstand.step.MoveCommand;
+import de.mickare.armortools.command.armorstand.step.RotateCommand;
 
 public class MainArmorCommand extends AbstractMainMenuCommand<ArmorToolsPlugin> {
 

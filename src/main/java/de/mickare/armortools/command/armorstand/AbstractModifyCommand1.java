@@ -56,9 +56,9 @@ public abstract class AbstractModifyCommand1 extends AbstractModifyCommand {
       return null;
     }
 
-    return parseAction(player, area.get());
+    return createAction(player, area.get());
   }
 
-  protected abstract ModifyAction parseAction(Player player, int area);
+  protected abstract ModifyAction createAction(Player player, int area);
 
 }

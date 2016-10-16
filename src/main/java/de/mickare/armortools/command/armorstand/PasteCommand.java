@@ -15,7 +15,7 @@ public class PasteCommand extends AbstractModifyCommand1 {
   }
 
   @Override
-  protected ModifyAction parseAction(Player player, int area) {
+  protected ModifyAction createAction(Player player, int area) {
 
     final ArmorSetting setting = CloneCommand.SETTINGS.get(player);
     if (setting == null) {
@@ -25,19 +25,16 @@ public class PasteCommand extends AbstractModifyCommand1 {
 
     if (area > 0) {
 
-      return ModifyAction.area(area, a -> {
-        setting.apply(a);
-        return true;
-      });
+      return ModifyAction.area(area, setting);
 
     } else {
 
       Out.CMD_MODIFY_HIT.send(player, this.getCommand());
 
-      return ModifyAction.click(a -> {
-        setting.apply(a);
+      return ModifyAction.click((action, armorstands) -> {
+        armorstands.forEach(setting);
         Out.CMD_PASTE_DONE.send(player);
-        return true;
+        return armorstands.size();
       });
 
     }

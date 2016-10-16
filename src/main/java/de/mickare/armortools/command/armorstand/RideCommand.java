@@ -24,7 +24,7 @@ public class RideCommand extends AbstractCommandAndClick<ArmorToolsPlugin> {
   }
 
   @Override
-  public Callback<ArmorStand> getClickCallback(final Player player, final String[] args) {
+  public Callback<ArmorStand> executeOrCallback(final Player player, final String[] args) {
 
     if (!Permissions.MODIFY.checkPermission(player)) {
       Out.PERMISSION_MISSING_MODIFY.send(player);
