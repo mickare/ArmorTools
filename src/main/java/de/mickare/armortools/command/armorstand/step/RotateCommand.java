@@ -40,7 +40,7 @@ public class RotateCommand extends AbstractModifyCommand1 {
   protected ModifyAction createAction(Player player, int area) {
 
     if (area > 0) {
-      
+
       return ModifyAction.area(ModifyAction.Type.ROTATE, area, (action, armorstands) -> {
         return execute(player, action, armorstands);
       });
@@ -122,7 +122,7 @@ public class RotateCommand extends AbstractModifyCommand1 {
       final double rotationRADIAN = total_steps * 2 * Math.PI / roation_modulo;
       final double sin = Math.sin(rotationRADIAN);
       final double cos = Math.cos(rotationRADIAN);
-      
+
       Iterator<Entry<ArmorStand, Location>> iter = armorstands.entrySet().iterator();
       Map<ArmorStand, Location> targetLocations = Maps.newHashMap();
       while (iter.hasNext()) {
@@ -171,10 +171,14 @@ public class RotateCommand extends AbstractModifyCommand1 {
 
         targetLocations.put(armorstand, loc);
       }
-      
+
       this.lastEvent = ArmorEventFactory.callRotateEvent(this, targetLocations);
-      if(lastEvent.isCancelled()) {
-        return false;
+      switch (lastEvent.getResult()) {
+        case CANCEL:
+          return true;
+        case STOP:
+          return false;
+        default:
       }
 
       for (Entry<ArmorStand, Location> e : targetLocations.entrySet()) {
