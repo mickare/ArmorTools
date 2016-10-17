@@ -172,7 +172,7 @@ public class RotateCommand extends AbstractModifyCommand1 {
         targetLocations.put(armorstand, loc);
       }
 
-      this.lastEvent = ArmorEventFactory.callRotateEvent(this, targetLocations);
+      this.lastEvent = ArmorEventFactory.callRotateEvent(player, this, targetLocations);
       switch (lastEvent.getResult()) {
         case CANCEL:
           return true;

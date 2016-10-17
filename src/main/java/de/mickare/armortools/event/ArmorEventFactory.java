@@ -40,9 +40,9 @@ public class ArmorEventFactory {
   }
 
 
-  public static ArmorMoveEvent callMoveEvent(MoveStepAction action, Vector moved,
+  public static ArmorMoveEvent callMoveEvent(Player player, MoveStepAction action, Vector moved,
       Map<ArmorStand, Location> targetLocations) {
-    ArmorMoveEvent event = new ArmorMoveEvent(action, moved, targetLocations);
+    ArmorMoveEvent event = new ArmorMoveEvent(player, action, moved, targetLocations);
     Bukkit.getPluginManager().callEvent(event);
     return event;
   }
@@ -53,9 +53,9 @@ public class ArmorEventFactory {
     return event;
   }
 
-  public static ArmorRotateEvent callRotateEvent(RotateStepAction action,
+  public static ArmorRotateEvent callRotateEvent(Player player, RotateStepAction action,
       Map<ArmorStand, Location> targetLocations) {
-    ArmorRotateEvent event = new ArmorRotateEvent(action, targetLocations);
+    ArmorRotateEvent event = new ArmorRotateEvent(player, action, targetLocations);
     Bukkit.getPluginManager().callEvent(event);
     return event;
   }

@@ -212,7 +212,7 @@ public class MoveCommand extends AbstractModifyCommand implements TabCompleter {
         targetLocations.put(armorstand, loc);
       }
 
-      this.lastEvent = ArmorEventFactory.callMoveEvent(this,
+      this.lastEvent = ArmorEventFactory.callMoveEvent(player, this,
           loc_vec_add.clone().multiply(1.d / dis_modulo), targetLocations);
       switch (lastEvent.getResult()) {
         case CANCEL:

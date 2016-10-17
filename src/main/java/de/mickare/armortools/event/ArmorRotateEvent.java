@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 
@@ -18,6 +19,7 @@ public class ArmorRotateEvent extends ArmorEvent implements Cancellable {
 
   private static @Getter final HandlerList handlerList = new HandlerList();
 
+  private @Getter @NonNull final Player player;
   private @Getter @NonNull final RotateStepAction action;
   private @Getter @NonNull final Map<ArmorStand, Location> targetLocations;
 
