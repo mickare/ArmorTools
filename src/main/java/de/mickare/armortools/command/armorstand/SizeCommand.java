@@ -59,8 +59,6 @@ public class SizeCommand extends AbstractModifyCommand2 implements TabCompleter 
 
     } else {
 
-      Out.CMD_MODIFY_HIT.send(player, this.getCommand());
-
       return ModifyAction.click(ModifyAction.Type.SIZE, a -> {
         a.setSmall(on);
       });

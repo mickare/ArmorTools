@@ -12,7 +12,6 @@ import com.google.common.collect.Lists;
 import de.mickare.armortools.ArmorToolsPlugin;
 import de.mickare.armortools.Out;
 import de.mickare.armortools.Permissions;
-import de.mickare.armortools.command.armorstand.AbstractModifyCommand.ModifyAction;
 import net.md_5.bungee.api.ChatColor;
 
 public class GravityCommand extends AbstractModifyCommand2 implements TabCompleter {
@@ -60,8 +59,6 @@ public class GravityCommand extends AbstractModifyCommand2 implements TabComplet
       });
 
     } else {
-
-      Out.CMD_MODIFY_HIT.send(player, this.getCommand());
 
       return ModifyAction.click(ModifyAction.Type.GRAVITY, (action, armorstands) -> {
         armorstands.forEach(a -> a.setGravity(on));

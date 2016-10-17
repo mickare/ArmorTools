@@ -1,5 +1,6 @@
 package de.mickare.armortools.command.armorstand.item;
 
+import java.util.Collection;
 import java.util.Set;
 
 import org.bukkit.GameMode;
@@ -30,7 +31,7 @@ public abstract class AbstractItemIDCommand extends AbstractModifyCommand2 {
 
   protected abstract void sendItemSwitchedMessage(Player player);
 
-  private int executeAction(Player player, ModifyAction action, Set<ArmorStand> armorstands,
+  private int executeAction(Player player, ModifyAction action, Collection<ArmorStand> armorstands,
       ItemStack item) {
     if (armorstands.size() == 0) {
       return 0;

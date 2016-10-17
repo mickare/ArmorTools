@@ -14,7 +14,6 @@ import de.mickare.armortools.ArmorToolsPlugin;
 import de.mickare.armortools.ArmorUtil;
 import de.mickare.armortools.Out;
 import de.mickare.armortools.Permissions;
-import de.mickare.armortools.command.armorstand.AbstractModifyCommand.ModifyAction;
 import net.md_5.bungee.api.ChatColor;
 
 public class MarkerCommand extends AbstractModifyCommand2 implements TabCompleter {
@@ -70,8 +69,6 @@ public class MarkerCommand extends AbstractModifyCommand2 implements TabComplete
       });
 
     } else {
-
-      Out.CMD_MODIFY_HIT.send(player, this.getCommand());
 
       return ModifyAction.click(ModifyAction.Type.MARKER, a -> {
         if (a.hasGravity() && on) {

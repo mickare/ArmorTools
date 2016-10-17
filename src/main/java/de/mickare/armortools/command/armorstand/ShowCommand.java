@@ -24,8 +24,6 @@ public class ShowCommand extends AbstractModifyCommand1 {
 
     } else {
 
-      Out.CMD_MODIFY_HIT.send(player, this.getCommand());
-
       return ModifyAction.click(ModifyAction.Type.SHOW, a -> {
         a.setVisible(true);
       });

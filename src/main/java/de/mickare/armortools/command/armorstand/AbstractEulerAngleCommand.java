@@ -1,6 +1,7 @@
 package de.mickare.armortools.command.armorstand;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -274,8 +275,6 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
 
     } else {
 
-      Out.CMD_MODIFY_HIT.send(player, this.getCommand());
-
       return ModifyAction.click(getModifyActionType(), (action, armorstands) -> {
         return executeAction(player, armorstands, rotate);
       });
@@ -284,7 +283,7 @@ public abstract class AbstractEulerAngleCommand extends AbstractModifyCommand
 
   }
 
-  private int executeAction(Player player, Set<ArmorStand> armorstands,
+  private int executeAction(Player player, Collection<ArmorStand> armorstands,
       Function<EulerAngle, EulerAngle> rotate) {
     armorstands.forEach(armor -> execute(player, armor, rotate));
     return armorstands.size();

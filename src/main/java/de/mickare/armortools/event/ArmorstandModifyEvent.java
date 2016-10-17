@@ -1,16 +1,15 @@
 package de.mickare.armortools.event;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.Map;
 
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
-import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Maps;
 
 import de.mickare.armortools.command.armorstand.AbstractModifyCommand.ModifyAction;
 import lombok.Getter;
@@ -25,7 +24,7 @@ public class ArmorstandModifyEvent extends ArmorEvent implements Cancellable {
 
   private @Getter @NonNull final Player player;
   private @Getter @NonNull final ModifyAction action;
-  private @Getter @NonNull final Set<ArmorStand> entities;
+  private @Getter @NonNull final Map<Integer, ArmorStand> entities = Maps.newHashMap();
 
 
   public ArmorstandModifyEvent(Player player, ModifyAction action,
@@ -35,9 +34,12 @@ public class ArmorstandModifyEvent extends ArmorEvent implements Cancellable {
     Preconditions.checkNotNull(entities);
     this.player = player;
     this.action = action;
-    this.entities = Sets.newHashSet(entities);
+    addAllEntities(entities);
   }
 
+  public void addAllEntities(Collection<ArmorStand> c) {
+    c.forEach(a -> this.entities.put(a.getEntityId(), a));
+  }
 
   @Override
   public HandlerList getHandlers() {

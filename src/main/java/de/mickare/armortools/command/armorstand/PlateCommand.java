@@ -59,8 +59,6 @@ public class PlateCommand extends AbstractModifyCommand2 implements TabCompleter
 
     } else {
 
-      Out.CMD_MODIFY_HIT.send(player, this.getCommand());
-
       return ModifyAction.click(ModifyAction.Type.PLATE, a -> {
         a.setBasePlate(on);
       });

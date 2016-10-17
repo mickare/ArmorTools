@@ -1,5 +1,6 @@
 package de.mickare.armortools.command.armorstand;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import java.util.function.BiFunction;
@@ -83,7 +84,7 @@ public abstract class AbstractModifyCommand extends AbstractCommandAndClick<Armo
       return;
     }
 
-    int count = action.apply(event.getEntities());
+    int count = action.apply(event.getEntities().values());
 
     action.finish();
 
@@ -103,13 +104,13 @@ public abstract class AbstractModifyCommand extends AbstractCommandAndClick<Armo
     private final @Getter @NonNull Type type;
     private final @Getter boolean area;
     private final @Getter int areaSize;
-    private final @NonNull BiFunction<ModifyAction, Set<ArmorStand>, Integer> modifier;
+    private final @NonNull BiFunction<ModifyAction, Collection<ArmorStand>, Integer> modifier;
     private final @Getter DataContainer data = new DataContainer();
     private Runnable finish = () -> {
     };
 
     public static ModifyAction click(Type type,
-        BiFunction<ModifyAction, Set<ArmorStand>, Integer> modifier) {
+        BiFunction<ModifyAction, Collection<ArmorStand>, Integer> modifier) {
       return new ModifyAction(type, false, 0, modifier);
     }
 
@@ -121,7 +122,7 @@ public abstract class AbstractModifyCommand extends AbstractCommandAndClick<Armo
     }
 
     public static ModifyAction area(Type type, int size,
-        BiFunction<ModifyAction, Set<ArmorStand>, Integer> modifier) {
+        BiFunction<ModifyAction, Collection<ArmorStand>, Integer> modifier) {
       return new ModifyAction(type, true, size, modifier);
     }
 
@@ -132,7 +133,7 @@ public abstract class AbstractModifyCommand extends AbstractCommandAndClick<Armo
       });
     }
 
-    public int apply(Set<ArmorStand> armor) {
+    public int apply(Collection<ArmorStand> armor) {
       return modifier.apply(this, armor);
     }
 

@@ -17,7 +17,6 @@ import de.mickare.armortools.ArmorUtil;
 import de.mickare.armortools.DisabledPart;
 import de.mickare.armortools.Out;
 import de.mickare.armortools.Permissions;
-import de.mickare.armortools.command.armorstand.AbstractModifyCommand.ModifyAction;
 import net.md_5.bungee.api.ChatColor;
 
 public class ProtectCommand extends AbstractModifyCommand3 implements TabCompleter {
@@ -86,8 +85,6 @@ public class ProtectCommand extends AbstractModifyCommand3 implements TabComplet
       });
 
     } else {
-
-      Out.CMD_MODIFY_HIT.send(player, this.getCommand());
 
       return ModifyAction.click(ModifyAction.Type.PROTECT, (action, armorstands) -> {
         armorstands.forEach(a -> ArmorUtil.setProtected(a, on, part));

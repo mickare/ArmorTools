@@ -1,5 +1,6 @@
 package de.mickare.armortools.command.armorstand.step;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import de.mickare.armortools.ArmorToolsPlugin;
 import de.mickare.armortools.Out;
@@ -18,7 +20,6 @@ import de.mickare.armortools.Permissions;
 import de.mickare.armortools.StepAction;
 import de.mickare.armortools.StepManager;
 import de.mickare.armortools.command.armorstand.AbstractModifyCommand1;
-import de.mickare.armortools.command.armorstand.AbstractModifyCommand.ModifyAction;
 import de.mickare.armortools.event.ArmorEventFactory;
 import de.mickare.armortools.event.ArmorRotateEvent;
 import lombok.Getter;
@@ -39,12 +40,13 @@ public class RotateCommand extends AbstractModifyCommand1 {
   protected ModifyAction createAction(Player player, int area) {
 
     if (area > 0) {
+      
       return ModifyAction.area(ModifyAction.Type.ROTATE, area, (action, armorstands) -> {
         return execute(player, action, armorstands);
       });
 
     } else {
-      Out.CMD_MODIFY_HIT.send(player, this.getCommand());
+
       return ModifyAction.click(ModifyAction.Type.ROTATE, (action, armorstands) -> {
         return execute(player, action, armorstands);
       });
@@ -52,12 +54,12 @@ public class RotateCommand extends AbstractModifyCommand1 {
 
   }
 
-  private int execute(Player player, ModifyAction action, Set<ArmorStand> armorstands) {
+  private int execute(Player player, ModifyAction action, Collection<ArmorStand> armorstands) {
     if (armorstands.size() == 0) {
       Out.CMD_ROTATE_AREA_EMPTY.send(player);
       return 0;
     }
-    StepManager.getInstance().putMove(player, new RotateStepAction(armorstands));
+    StepManager.getInstance().putMove(player, new RotateStepAction(Sets.newHashSet(armorstands)));
     Out.CMD_ROTATE_START.send(player, armorstands.size());
     return armorstands.size();
   }

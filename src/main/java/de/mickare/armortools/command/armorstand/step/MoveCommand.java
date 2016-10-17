@@ -1,5 +1,6 @@
 package de.mickare.armortools.command.armorstand.step;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -85,8 +86,6 @@ public class MoveCommand extends AbstractModifyCommand implements TabCompleter {
 
     } else {
 
-      Out.CMD_MODIFY_HIT.send(player, this.getCommand());
-
       return ModifyAction.click(ModifyAction.Type.MOVE, (action, armorstands) -> {
         return execute(player, action, armorstands, useGrid.get());
       });
@@ -96,7 +95,7 @@ public class MoveCommand extends AbstractModifyCommand implements TabCompleter {
 
   }
 
-  private int execute(Player player, ModifyAction action, Set<ArmorStand> armorstands,
+  private int execute(Player player, ModifyAction action, Collection<ArmorStand> armorstands,
       boolean useGrid) {
     if (armorstands.size() == 0) {
       Out.CMD_MOVE_AREA_EMPTY.send(player);
