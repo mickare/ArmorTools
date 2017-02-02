@@ -61,6 +61,9 @@ public class RideCommand extends AbstractCommandAndClick<ArmorToolsPlugin> {
         Out.CMD_MODIFY_YOU_CANT_BUILD_HERE.send(player);
         return;
       }
+      if(this.armorstand.equals(entity)) {
+        player.sendMessage(ChatColor.RED + "ArmorStand cannot ride itself!");        
+      }
       if (entity.isValid()) {
         entity.setPassenger(this.armorstand);
       }

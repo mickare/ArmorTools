@@ -37,4 +37,19 @@ public class InventoryUtils {
 
     return amount;
   }
+
+
+  public static ItemStack singletonItem(ItemStack old) {
+    if (old == null) {
+      return null;
+    }
+    ItemStack item = new ItemStack(old);
+    item.setAmount(1);
+    return item;
+  }
+
+  public static boolean isSimilar(ItemStack a, ItemStack b) {
+    return (a == null && b == null) || (a != null && a.isSimilar(b));
+  }
+
 }

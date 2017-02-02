@@ -30,27 +30,40 @@ public abstract class AbstractItemCommand extends AbstractModifyCommand1 {
 
   protected abstract void sendItemSwitchedMessage(Player player);
 
-  private int executeAction(Player player, ModifyAction action, Collection<ArmorStand> armorstands) {
+
+  private int executeAction(Player player, ModifyAction action,
+      Collection<ArmorStand> armorstands) {
     if (armorstands.size() == 0) {
       return 0;
     }
 
-    ItemStack handItem = player.getEquipment().getItemInMainHand();
+    final ItemStack handItem = player.getEquipment().getItemInMainHand();
+    final ItemStack newItem = InventoryUtils.singletonItem(handItem);
 
     if (player.getGameMode() == GameMode.CREATIVE) {
-      armorstands.forEach(armor -> setItem(armor, handItem));
+      armorstands.forEach(armor -> setItem(armor, newItem));
       sendItemSwitchedMessage(player);
       return armorstands.size();
     }
 
-    int removedItems = InventoryUtils.removeItemFromPlayer(player, handItem, armorstands.size());
+    int amount = armorstands.size();
+    for (ArmorStand armor : armorstands) {
+      if (InventoryUtils.isSimilar(getItem(armor), newItem)) {
+        amount--;
+      }
+    }
+
+    int removedItems = InventoryUtils.removeItemFromPlayer(player, handItem, amount);
     int armorstandsChanged = 0;
 
     for (ArmorStand armor : armorstands) {
+      ItemStack oldItem = getItem(armor);
+      if (InventoryUtils.isSimilar(oldItem, newItem)) {
+        continue;
+      }
       if (armorstandsChanged >= removedItems) {
         break;
       }
-      ItemStack oldItem = getItem(armor);
       if (oldItem != null) {
         ItemStack currentInHand = player.getEquipment().getItemInMainHand();
         if (currentInHand == null || currentInHand.getType() == Material.AIR) {
@@ -59,7 +72,7 @@ public abstract class AbstractItemCommand extends AbstractModifyCommand1 {
           player.getInventory().addItem(oldItem);
         }
       }
-      setItem(armor, handItem);
+      setItem(armor, newItem);
       armorstandsChanged++;
     }
 

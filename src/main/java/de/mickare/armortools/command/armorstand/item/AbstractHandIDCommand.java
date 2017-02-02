@@ -8,6 +8,7 @@ import de.mickare.armortools.ArmorToolsPlugin;
 import de.mickare.armortools.Out;
 import de.mickare.armortools.Permissions;
 import de.mickare.armortools.command.armorstand.AbstractModifyCommand.ModifyAction.Type;
+import de.mickare.armortools.permission.PermissionAnd;
 
 public abstract class AbstractHandIDCommand extends AbstractItemIDCommand {
 
@@ -24,7 +25,7 @@ public abstract class AbstractHandIDCommand extends AbstractItemIDCommand {
 
     public HandIDCommand(ArmorToolsPlugin plugin) {
       super(plugin, "handid", "handid [id] [area]", Out.CMD_HAND_ID);
-      this.addPermission(Permissions.HAND);
+      this.addPermission(new PermissionAnd(Permissions.HAND, Permissions.HAND_ID));
     }
 
     @Override
@@ -52,7 +53,7 @@ public abstract class AbstractHandIDCommand extends AbstractItemIDCommand {
 
     public OffHandIDCommand(ArmorToolsPlugin plugin) {
       super(plugin, "offhandid", "offhandid [id] [area]", Out.CMD_OFFHAND_ID);
-      this.addPermission(Permissions.OFFHAND);
+      this.addPermission(new PermissionAnd(Permissions.OFFHAND, Permissions.HAND_ID));
     }
 
     @Override

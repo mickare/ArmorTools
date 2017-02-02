@@ -8,12 +8,13 @@ import de.mickare.armortools.ArmorToolsPlugin;
 import de.mickare.armortools.Out;
 import de.mickare.armortools.Permissions;
 import de.mickare.armortools.command.armorstand.AbstractModifyCommand.ModifyAction.Type;
+import de.mickare.armortools.permission.PermissionAnd;
 
 public class HelmetIDCommand extends AbstractItemIDCommand {
 
   public HelmetIDCommand(ArmorToolsPlugin plugin) {
     super(plugin, "helmetid", "helmetid [id] [area]", Out.CMD_HELMET_ID);
-    this.addPermission(Permissions.HELMET_ID);
+    this.addPermission(new PermissionAnd(Permissions.HELMET, Permissions.HELMET_ID));
   }
 
   @Override
